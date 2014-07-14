@@ -23,30 +23,6 @@ We can measure on every line how large array operations allocate and deallocate 
     'del a' used -76.2031 MiB RAM in 0.10s, total RAM usage 49.40 MiB
 
 
-The reports can help us to optimise our code. Here's an example of a less optimal approach to masking:
-
-    In [2]: a=np.random.random((1e5,1e3))
-    'a=np.random.random((1e5,1e3))' used 762.7930 MiB RAM in 0.21s, total RAM usage 812.18 MiB
-    In [3]: b=a>0.5
-    'b=a>0.5' used 95.3789 MiB RAM in 0.43s, total RAM usage 907.55 MiB
-    In [4]: c=a[b]
-    'c=a[b]' used 381.5547 MiB RAM in 0.21s, total RAM usage 1289.11 MiB
-
-The above block makes a random array, creates a mask, then uses the mask to select a new `c`, in total 1.2GB is used.
-
-Instead in the following we can see that avoiding `b` saves us 100MB _and_ allows `c` to be a _view_ onto `a` which avoids creating a new matrix, in total only 900MB is used:
-
-    In [2]: a=np.random.random((1e5,1e3))
-    'a=np.random.random((1e5,1e3))' used 762.7930 MiB RAM in 0.21s, total RAM usage 812.18 MiB
-    In [3]: c=a>0.5
-    'c=a>0.5' used 95.3789 MiB RAM in 0.43s, total RAM usage 907.55 MiB
-
-
-
-
-
-
-
 Requirements
 ============
 
