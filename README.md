@@ -16,7 +16,6 @@ We can measure on every line how large array operations allocate and deallocate 
     IPython 2.1.0 -- An enhanced Interactive Python.
 
     In [1]: %run -i  ipython_memory_usage.py
-    IPython Memory usage reporter has started (exit IPython to stop using it)
     In [2]: a=np.ones(1e7)
     'a=np.ones(1e7)' used 76.2305 MiB RAM in 0.32s, total RAM usage 125.61 MiB
     In [3]: del a
@@ -32,9 +31,10 @@ Tested on
 =========
 
  * IPython 2.1 with Python 2.7 on Linux 64bit
+ * IPython 2.1 with Python 2.7 on Windows 64bit
 
 Problems
 ========
 
  * prints come after the next In[] prompt, so the display is a bit messy (hit return to get a clean new input prompt)
- * can't kill the thread after it is started so you must exit IPython to stop it
+ * I can't figure out how to hook into live In prompt (at least - I can for static output, not for a dynamic output)
