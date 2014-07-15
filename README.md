@@ -58,4 +58,6 @@ Problems
 ========
 
  * prints come after the next In[] prompt, so the display is a bit messy (hit return to get a clean new input prompt)
- * I can't figure out how to hook into live In prompt (at least - I can for static output, not for a dynamic output)
+ * I can't figure out how to hook into live In prompt (at least - I can for static output, not for a dynamic output - see the code and the commented out blocks referring to `watch_memory_prompt`)
+ * I haven't figured out how to disable the tool - probably an `argparse` with an option to disable would be a nice start
+ * Needs a `setup.py` to install it
