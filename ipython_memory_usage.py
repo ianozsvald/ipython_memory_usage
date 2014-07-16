@@ -1,13 +1,16 @@
 import memory_profiler
-import threading
+import os
+import time
 
 # %run -i memory_watcher.py
 
 # keep a global accounting for the last known memory usage
 # which is the reference point for the memory delta calculation
 previous_call_memory_usage = memory_profiler.memory_usage()[0]
+t1 = time.time()
 
-from IPython.core.prompts import LazyEvaluate
+
+#from IPython.core.prompts import LazyEvaluate
 #  variant that runs inside the IPy In prompt, but is broken in that it
 # only updates once and then not again
 # http://ipython.org/ipython-doc/dev/api/generated/IPython.core.prompts.html
@@ -18,7 +21,6 @@ def watch_memory_prompt():
     global previous_call_memory_usage
     memory_usage = previous_call_memory_usage
     last_memory_usage = previous_call_memory_usage
-    t1 = time.time()
     nbr_commands = len(In)
     while True:
         new_memory_usage = memory_profiler.memory_usage()[0]
@@ -30,7 +32,6 @@ def watch_memory_prompt():
         else:
             break
     memory_delta = new_memory_usage - memory_usage
-    time_delta_secs = time.time() - t1
     # note that long strings raise an error in IPython, hence this short output
     output = u"{memory_delta:0.4f} MiB RAM".format(time_delta=time_delta_secs, cmd=In[nbr_commands-1], memory_delta=memory_delta, memory_usage=new_memory_usage)
     previous_call_memory_usage = new_memory_usage
@@ -43,7 +44,7 @@ def watch_memory():
     global previous_call_memory_usage
     memory_usage = previous_call_memory_usage
     last_memory_usage = previous_call_memory_usage
-    t1 = time.time()
+    #t1 = time.time()
     nbr_commands = len(In)
     while True:
         new_memory_usage = memory_profiler.memory_usage()[0]
@@ -61,10 +62,22 @@ def watch_memory():
     previous_call_memory_usage = new_memory_usage
 
 
+def pre_run_cell():
+    """Capture current time before we execute the current command"""
+    import time
+    global t1
+    t1 = time.time()
+
+
 if __name__ == "__main__":
+    if 'In' not in dir():
+        script_name = os.path.split(__file__)[1]
+        raise ValueError("You must run this from IPython interactively using e.g. '%run -i {}'".format(script_name))
+
     ip = get_ipython()
     # http://ipython.org/ipython-doc/dev/api/generated/IPython.core.events.html
     ip.events.register("post_run_cell", watch_memory)  # WORKS WELL
+    ip.events.register("pre_run_cell", pre_run_cell)
 
     #ip.set_hook("pre_prompt_hook", dummy)  # gives lots of stuff to dummy, does not set prompt
     # def dummy(arg) ... where arg is an interactiveshell
