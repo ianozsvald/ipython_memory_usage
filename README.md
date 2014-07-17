@@ -56,7 +56,21 @@ If we make a large 1.5GB array of random integers we can `sqrt` in-place using t
     'b=np.sqrt(a)' used 1525.8828 MiB RAM in 1.67s, total RAM usage 3101.32 MiB
 
 
-_NOTE_ that the method currently used looks at the memory delta between the last issued command and the end of the current command. It does not take into account any intermediate objects (which might be large) that are created and discarded before the current command completes, hence the delta estimate should be considered a lower-bound on the RAM used during the processing of the instruction (and I'd love to figure out how to get the upper-bound - see Problems below).
+We can also see the hidden temporary objects that are created _during_ the execution of a command. Below you can see that whilst `d=a*b+c` takes 3.1GB overall, it peaks at approximately 3.7GB due to the 5th temporary matrix which holds the temporary result of `a*b`.
+
+    In [2]: a=np.ones(1e8); b=np.ones(1e8); c=np.ones(1e8)
+    'a=np.ones(1e8); b=np.ones(1e8); c=np.ones(1e8)' used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
+    In [3]: d=a*b+c
+    'd=a*b+c' used 762.9453 MiB RAM in 0.91s, peaked 667.91 MiB above current, total RAM usage 3101.01 MiB
+
+Knowing that a temporary is created, we can do an in-place operation instead for the same result but a lower overall RAM footprint:
+
+    In [2]: a=np.ones(1e8); b=np.ones(1e8); c=np.ones(1e8)
+    'a=np.ones(1e8); b=np.ones(1e8); c=np.ones(1e8)' used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
+    In [3]: d=a*b
+    'd=a*b' used 762.9453 MiB RAM in 0.49s, peaked 0.00 MiB above current, total RAM usage 3101.00 MiB
+    In [4]: d+=c
+    'd+=c' used 0.0000 MiB RAM in 0.25s, peaked 0.00 MiB above current, total RAM usage 3101.00 MiB
 
 
 Requirements
