@@ -1,9 +1,9 @@
 ipython_memory_usage
 ====================
 
-IPython tool to report memory usage deltas for every command you type.
+IPython tool to report memory usage deltas for every command you type. If you are running out of RAM then use this tool to understand what's happening.
 
-This tool helps you to figure out which commands use a lot of RAM and take a long time to run, this is very useful if you're working with large numpy matrices.
+This tool helps you to figure out which commands use a lot of RAM and take a long time to run, this is very useful if you're working with large numpy matrices. In addition it reports the peak memory usage whilst a command is running which might be higher (due to temporary objects) than the final RAM usage.
 
 Example usage
 =============
@@ -72,6 +72,12 @@ Knowing that a temporary is created, we can do an in-place operation instead for
     In [4]: d+=c
     'd+=c' used 0.0000 MiB RAM in 0.25s, peaked 0.00 MiB above current, total RAM usage 3101.00 MiB
 
+For more on this example see `Tip` at http://docs.scipy.org/doc/numpy/reference/ufuncs.html#available-ufuncs .
+
+Important RAM usage note
+========================
+
+It is much easier to debug RAM situations with a fresh IPython shell. The longer you use your current shell, the more objects remain inside it and the more RAM the Operating System may have reserved. RAM is returned to the OS slowly, so you can end up with a large process with plenty of spare internal RAM (which will be allocated to your large objects), so this tool (via memory_profiler) reports 0MB RAM usage. If you get confused or don't trust the results, quit IPython and start a fresh shell, then run the fewest commands you need to understand how RAM is added to the process.
 
 Requirements
 ============
@@ -87,9 +93,6 @@ Tested on
 Problems
 ========
 
- * prints come after the next In[] prompt, so the display is a bit messy (hit return to get a clean new input prompt)
  * I can't figure out how to hook into live In prompt (at least - I can for static output, not for a dynamic output - see the code and the commented out blocks referring to `watch_memory_prompt`)
- * I haven't figured out how to disable the tool - probably an `argparse` with an option to disable would be a nice start
+ * I haven't figured out how to disable the tool - probably an `argparse` with an option to disable would be a nice start which disables the hooks?
  * Needs a `setup.py` to install it
- * `Tip` at http://docs.scipy.org/doc/numpy/reference/ufuncs.html#available-ufuncs notes `a*b+c` creates a temporary, the way I measure RAM misses this temporary creation so it gives a lower than expected report of how much RAM is used for intermediates. Is there a way to capture this?  Perhaps return to the thread method (as used in v0), triggered by the pre-code hook, to get the maximal memory usage sample, then show this result in addition to the final maximal memory usage (so temporaries can be reported)?  update - yes, using a thread I can see peak memory usage, now I need to capture this using the pre-code-run hook to keep a track of peak usage before final report
- * Won't report RAM usage on objects that are smaller than the Python allocated RAM, e.g. after deleting a large Py object the space left might be re-used, so the RAM usage report won't change - this will mislead newbies who won't know to start with a clean memory for RAM testing
