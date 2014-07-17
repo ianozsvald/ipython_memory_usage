@@ -18,15 +18,9 @@ def watch_memory():
     import time
     # bring in the global memory usage value from the previous iteration
     global previous_call_memory_usage
-    memory_usage = previous_call_memory_usage
-    last_memory_usage = previous_call_memory_usage
     nbr_commands = len(In)
     new_memory_usage = memory_profiler.memory_usage()[0]
-
-    memory_delta = new_memory_usage - last_memory_usage
-    last_memory_usage = new_memory_usage
-    memory_delta = new_memory_usage - memory_usage
-
+    memory_delta = new_memory_usage - previous_call_memory_usage
     # calculate time delta using global t1 (from the pre-run event) and current
     # time
     time_delta_secs = time.time() - t1
