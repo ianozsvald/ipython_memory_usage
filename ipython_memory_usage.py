@@ -9,7 +9,7 @@ import os
 import time
 import memory_profiler
 
-# To run: %run -i memory_watcher.py
+# To run: %run -i ipython_memory_usage.py
 
 # keep a global accounting for the last known memory usage
 # which is the reference point for the memory delta calculation

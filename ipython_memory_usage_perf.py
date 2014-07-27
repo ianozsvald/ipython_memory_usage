@@ -10,8 +10,6 @@ import time
 import memory_profiler
 import perf_process
 
-# To run: %run -i memory_watcher.py
-
 # keep a global accounting for the last known memory usage
 # which is the reference point for the memory delta calculation
 previous_call_memory_usage = memory_profiler.memory_usage()[0]
@@ -24,10 +22,6 @@ def watch_memory():
     import time
     # bring in the global memory usage value from the previous iteration
     global previous_call_memory_usage, peak_memory_usage, keep_watching, perf_proc
-    perf_values = []
-    if perf_proc:
-        # if we have a valid perf running then capture that information
-        perf_values = perf_process.finish_perf(perf_proc)
     nbr_commands = len(In)
     new_memory_usage = memory_profiler.memory_usage()[0]
     memory_delta = new_memory_usage - previous_call_memory_usage
@@ -36,6 +30,15 @@ def watch_memory():
     # calculate time delta using global t1 (from the pre-run event) and current
     # time
     time_delta_secs = time.time() - t1
+    perf_values = []
+    if perf_proc:
+        print("FETCHGIN")
+        if time_delta_secs < 0.5:
+            # attempting to make sure we get a sample...
+            print("PAUSING")
+            time.sleep(0.5)  # pause until at least 0.1s has passed
+        # if we have a valid perf running then capture that information
+        perf_values = perf_process.finish_perf(perf_proc)
     cmd = In[nbr_commands-1]
     # convert the results into a pretty string
     output_template = "'{cmd}' used {memory_delta:0.4f} MiB RAM in {time_delta:0.2f}s, peaked {peaked_memory_usage:0.2f} MiB above current, total RAM usage {memory_usage:0.2f} MiB"
