@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Profile mem usage envelope of IPython commands and report interactively"""
+"""Use Linux perf tool to interrogate the CPU's performance counters"""
 from __future__ import division  # 1/2 == 0.5, as in Py3
 from __future__ import absolute_import  # avoid hiding global modules with locals
 from __future__ import print_function  # force use of print("hello")
@@ -8,6 +8,7 @@ from __future__ import unicode_literals  # force unadorned strings "" to be unic
 import os
 import time
 import memory_profiler
+import perf_process
 
 # To run: %run -i memory_watcher.py
 
@@ -17,11 +18,16 @@ previous_call_memory_usage = memory_profiler.memory_usage()[0]
 t1 = time.time() # will be set to current time later
 keep_watching = True
 peak_memory_usage = -1
+perf_proc = None
 
 def watch_memory():
     import time
     # bring in the global memory usage value from the previous iteration
-    global previous_call_memory_usage, peak_memory_usage, keep_watching
+    global previous_call_memory_usage, peak_memory_usage, keep_watching, perf_proc
+    perf_values = []
+    if perf_proc:
+        # if we have a valid perf running then capture that information
+        perf_values = perf_process.finish_perf(perf_proc)
     nbr_commands = len(In)
     new_memory_usage = memory_profiler.memory_usage()[0]
     memory_delta = new_memory_usage - previous_call_memory_usage
@@ -39,6 +45,10 @@ def watch_memory():
                                     peaked_memory_usage=peaked_memory_usage,
                                     memory_usage=new_memory_usage)
     print(str(output))
+    if perf_values:
+        print("perf sum over {} events, raw samples:".format(perf_process.EVENT_TYPE), sum(perf_values), perf_values)
+    else:
+        print("perf - no results to report")
     previous_call_memory_usage = new_memory_usage
 
 
@@ -69,7 +79,9 @@ def during_execution_memory_sampler():
 def pre_run_cell():
     """Capture current time before we execute the current command"""
     import time
-    global t1
+    import os
+    global perf_proc, t1
+    # t1 records the start time of this execution cycle
     t1 = time.time()
 
     # start a thread that samples RAM usage until the current command finishes
@@ -77,6 +89,9 @@ def pre_run_cell():
     ipython_memory_usage_thread = threading.Thread(target=during_execution_memory_sampler)
     ipython_memory_usage_thread.daemon = True
     ipython_memory_usage_thread.start()
+
+    pid = os.getpid()
+    perf_proc = perf_process.run_capture_perf(pid)
 
 
 

@@ -1,3 +1,8 @@
+""""""
+from __future__ import division  # 1/2 == 0.5, as in Py3
+from __future__ import absolute_import  # avoid hiding global modules with locals
+from __future__ import print_function  # force use of print("hello")
+from __future__ import unicode_literals  # force unadorned strings "" to be unicode without prepending u""
 import subprocess
 import unittest
 
@@ -8,6 +13,9 @@ ANSWER1 = [3183, 4045]
 FIXTURE2 = """     3.501390851        471,219,787 stalled-cycles-frontend\n  14.005319456          2,249,115 stalled-cycles-frontend  """
 ANSWER2 = [471219787,  2249115]
 
+
+#EVENT_TYPE = "cache-misses"
+EVENT_TYPE = "stalled-cycles-frontend"
 
 def process_line(line):
     """Process a single output line from perf-stat, extract only a value (skip help lines)"""
@@ -57,25 +65,19 @@ class Test(unittest.TestCase):
         self.assertEqual(values, ANSWER2)
 
 
-proc = None
-keep_running = None
-
-def run_capture_perf(pid=None):
-    if not pid:
-        import os
-        pid = os.getpid()
-        print "Using PID", pid
-    global proc, keep_running
-    import time
-    cmd = "perf stat --pid {pid} --event cache-misses -I 100".format(pid=pid)
+def run_capture_perf(pid):
+    """Start a perf stat process monitoring pid every 100ms"""
+    cmd = "perf stat --pid {pid} --event {event_type} -I 100".format(pid=pid, event_type=EVENT_TYPE)
+    print("run_capture_perf running:", cmd)  # debug message
     proc = subprocess.Popen(cmd.split(), stderr=subprocess.PIPE)
-    while keep_running:
-        time.sleep(0.1)
+    return proc
 
-def finish_perf():
+
+def finish_perf(proc):
+    """Finish collecting data, parse and return"""
     # once the job has finished, kill recording
-    global proc
     proc.kill()
+    # now block to gather all output data
     (stdoutdata, stderrdata) = proc.communicate()
     # example stderrdata output:
     # #           time             counts events
@@ -87,28 +89,11 @@ def finish_perf():
     return values
 
 
-def start_thread(pid):
-    import threading
-    ipython_memory_usage_thread = threading.Thread(target=run_capture_perf, args=(pid,))
-    ipython_memory_usage_thread.daemon = True
-    ipython_memory_usage_thread.start()
-
 if __name__ == "__main__":
-    pid = 2997
-    start_thread(pid)
+    # simple test for a hardcoded pid gathered over 0.5 seconds
+    pid = 4583
+    proc = run_capture_perf(pid)
     import time
     time.sleep(0.5)
-    keep_running = False
-    values = finish_perf()
-    print values
-
-if __name__ == "__main__X":
-    pid = 2997
-    #import os
-    #os.getpid(pid)
-    run_capture_perf()  # pid)
-    import time
-    time.sleep(0.5)
-    keep_running = False
-    values = finish_perf()
-    print values
+    values = finish_perf(proc)
+    print(values)
