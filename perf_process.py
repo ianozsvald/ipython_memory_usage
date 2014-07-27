@@ -14,8 +14,8 @@ FIXTURE2 = """     3.501390851        471,219,787 stalled-cycles-frontend\n  14.
 ANSWER2 = [471219787,  2249115]
 
 
-#EVENT_TYPE = "cache-misses"
-EVENT_TYPE = "stalled-cycles-frontend"
+EVENT_TYPE = "cache-misses"
+#EVENT_TYPE = "stalled-cycles-frontend"
 
 def process_line(line):
     """Process a single output line from perf-stat, extract only a value (skip help lines)"""
@@ -92,6 +92,7 @@ def finish_perf(proc):
 if __name__ == "__main__":
     # simple test for a hardcoded pid gathered over 0.5 seconds
     pid = 4583
+    print("Using pid:", pid)
     proc = run_capture_perf(pid)
     import time
     time.sleep(0.5)
