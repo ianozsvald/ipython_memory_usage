@@ -18,6 +18,7 @@ keep_watching = True
 peak_memory_usage = -1
 perf_proc = None
 
+
 def watch_memory():
     import time
     # bring in the global memory usage value from the previous iteration
@@ -32,11 +33,13 @@ def watch_memory():
     time_delta_secs = time.time() - t1
     perf_values = []
     if perf_proc:
-        print("FETCHGIN")
-        if time_delta_secs < 0.5:
-            # attempting to make sure we get a sample...
-            print("PAUSING")
-            time.sleep(0.5)  # pause until at least 0.1s has passed
+        # pause if necessary to attempt to make sure we get a sample from perf...
+        # as the 100ms min sample time and flushing oddness means I don't get a
+        # sample very quickly for short-running tasks
+        MIN_TIME_TO_GET_PERF_SAMPLE = 0.3
+        if time_delta_secs < MIN_TIME_TO_GET_PERF_SAMPLE:
+            print("PAUSING to get perf sample for {}s".format(MIN_TIME_TO_GET_PERF_SAMPLE))
+            time.sleep(MIN_TIME_TO_GET_PERF_SAMPLE)  # pause until at least 0.1s has passed
         # if we have a valid perf running then capture that information
         perf_values = perf_process.finish_perf(perf_proc)
     cmd = In[nbr_commands-1]
@@ -49,9 +52,10 @@ def watch_memory():
                                     memory_usage=new_memory_usage)
     print(str(output))
     if perf_values:
-        print("perf sum over {} events, raw samples:".format(perf_process.EVENT_TYPE), sum(perf_values), perf_values)
+        perf_average = int(sum(perf_values) / float(time_delta_secs))
+        print("perf value for {} averages to {:,}/second, raw samples:".format(perf_process.EVENT_TYPE, perf_average), perf_values)
     else:
-        print("perf - no results to report")
+        print("perf - no results to report, possibly the collection time was too short?")
     previous_call_memory_usage = new_memory_usage
 
 

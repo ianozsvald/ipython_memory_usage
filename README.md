@@ -92,43 +92,45 @@ Here's an example that builds on the previous ones. We build a square matrix wit
     In [2]: ones_c = np.ones((1e4,1e4))
     In [3]: v = np.ones(1e4)
 
-Next we run `%timeit` using all the data in row 0. The data will reasonably fit into a cache. The report `perf sum over cache-misses events: 18264.0` shows a total of 18k cache misses during this operation (followed by all the raw sampled events for reference). `%timeit` ran 10,000 loops so we divide 18k/10k and we have an average of 1.8 cache misses per loop (and `%timeit` reports 66 microseconds per loop).
+Next we run `%timeit` using all the data in row 0. The data will reasonably fit into a cache as `v.nbytes==80000` (80 kilobytes) and my L3 cache is 6MB. The report `perf value for cache-misses averages to 8,823/second` shows an average of 8k cache misses per seconds during this operation (followed by all the raw sampled events for reference). `%timeit` shows that this operation cost 14 microseconds per loop:
 
-    In [7]: %timeit v*ones_c[0,:]
-    run_capture_perf running: perf stat --pid 4633 --event cache-misses -I 100
-    10000 loops, best of 3: 66.6 µs per loop
-    'get_ipython().magic(u'timeit v*ones_c[0,:]')' used 0.1953 MiB RAM in 3.01s, peaked 0.00 MiB above current, total RAM usage 1575.74 MiB
-    perf sum over cache-misses events: 18264.0 [9709.0, 304.0, 290.0, 93.0, 422.0, 1369.0, 115.0, 877.0, 189.0, 49.0, 544.0, 156.0, 147.0, 27.0, 118.0, 55.0, 528.0, 1200.0, 97.0, 80.0, 395.0, 47.0, 860.0, 48.0, 440.0, 69.0, 36.0]
-    In [10]: 18264.0/10000
-    run_capture_perf running: perf stat --pid 4633 --event cache-misses -I 100
-    Out[10]: 1.8264
+    In [4]: %timeit v*ones_c[0,:]
+    run_capture_perf running: perf stat --pid 4978 --event cache-misses -I 100
+    100000 loops, best of 3: 14.9 µs per loop
+    'get_ipython().magic(u'timeit v*ones_c[0,:]')' used 0.1875 MiB RAM in 6.27s, peaked 0.00 MiB above current, total RAM usage 812.54 MiB
+    perf value for cache-misses averages to 8,823/second, raw samples: [6273.0, 382.0, 441.0, 1103.0, 632.0, 1314.0, 180.0, 451.0, 189.0, 540.0, 159.0, 1632.0, 285.0, 949.0, 408.0, 79.0, 448.0, 1167.0, 505.0, 350.0, 79.0, 172.0, 683.0, 2185.0, 1151.0, 170.0, 716.0, 2224.0, 572.0, 1708.0, 314.0, 572.0, 21.0, 209.0, 498.0, 839.0, 955.0, 233.0, 202.0, 797.0, 88.0, 185.0, 1663.0, 450.0, 352.0, 739.0, 4413.0, 1810.0, 1852.0, 550.0, 135.0, 389.0, 334.0, 235.0, 1922.0, 658.0, 233.0, 266.0, 170.0, 2198.0, 222.0, 4702.0]
 
-We can run the same code using alternative indexing - for column 0 we get all the row elements, this means we have to fetch the column but it is stored in row-order, so each long row goes into the cache to use just one element. `%timeit` reports 811 microseconds per loop - an order of magnitude slower than the previous form. The sum of cache-misses is 266276, over 1,000 loops we have 266 cache misses per loop. We can see that this approach is significantly less cache-friendly than the previous approach.
+We can run the same code using alternative indexing - for column 0 we get all the row elements, this means we have to fetch the column but it is stored in row-order, so each long row goes into the cache to use just one element. Now `%timeit` reports 210 microseconds per loop which is an order of magnitude slower than before, on average we have 474k cache misses per second. This column-ordered method of indexing the data is far less cache-friendly than the previous (row-ordered) method.
 
-    In [8]: %timeit v*ones_c[:,0]
-    run_capture_perf running: perf stat --pid 4633 --event cache-misses -I 100
-    1000 loops, best of 3: 811 µs per loop
-    'get_ipython().magic(u'timeit v*ones_c[:,0]')' used 0.0000 MiB RAM in 3.60s, peaked 0.00 MiB above current, total RAM usage 1575.74 MiB
-    perf sum over cache-misses events: 266276.0 [16213.0, 14394.0, 7108.0, 7134.0, 11397.0, 12103.0, 6202.0, 5972.0, 6937.0, 7469.0, 11338.0, 5571.0, 5556.0, 6159.0, 7199.0, 9346.0, 9343.0, 5759.0, 6796.0, 6766.0, 6990.0, 7411.0, 10099.0, 6671.0, 7962.0, 9144.0, 6244.0, 5958.0, 12138.0, 7234.0, 6867.0, 5251.0, 5545.0]
+    In [5]: %timeit v*ones_c[:,0]
+    run_capture_perf running: perf stat --pid 4978 --event cache-misses -I 100
+    1000 loops, best of 3: 210 µs per loop
+    'get_ipython().magic(u'timeit v*ones_c[:,0]')' used 0.0156 MiB RAM in 1.01s, peaked 0.00 MiB above current, total RAM usage 812.55 MiB
+    perf value for cache-misses averages to 474,771/second, raw samples: [77253.0, 49168.0, 48660.0, 53147.0, 52532.0, 56546.0, 50128.0, 48890.0, 43623.0]
 
-    In [9]: 266276.0/1000
-    run_capture_perf running: perf stat --pid 4633 --event cache-misses -I 100
-    Out[9]: 266.276
+If the sample-gathering happens too quickly then an artifical pause is added, this means that IPython can pause for a fraction of a second which inevitably causes cache misses (as the CPU is being using and IPython is running an event loop). You can witness the baseline cache misses using `pass`:
 
-NOTE that this is experimental, it is only known to work on Ian's laptop using Ubuntu Linux. There are some tests for the `perf` parsing code, run `nosetests perf_process.py` to confirm these work ok and validate with your own `perf` output. I'm using `perf` version 3.11.0-12. Inside `perf_process.py` the `EVENT_TYPE` can be substituted to other events like `stalled-cycles-frontend` (exit IPython and restart to make sure the run-time is good - this code is hacky!).
+    In [9]: pass
+    run_capture_perf running: perf stat --pid 4978 --event cache-misses -I 100
+    PAUSING to get perf sample for 0.3s
+    'pass' used 0.0039 MiB RAM in 0.13s, peaked 0.00 MiB above current, total RAM usage 812.57 MiB
+    perf value for cache-misses averages to 131,611/second, raw samples: [14111.0, 3481.0]
+
+NOTE that this is experimental, it is only known to work on Ian's laptop using Ubuntu Linux (`perf` doesn't exist on Mac or Windows). There are some tests for the `perf` parsing code, run `nosetests perf_process.py` to confirm these work ok and validate with your own `perf` output. I'm using `perf` version 3.11.0-12. Inside `perf_process.py` the `EVENT_TYPE` can be substituted to other events like `stalled-cycles-frontend` (exit IPython and restart to make sure the run-time is good - this code is hacky!).
 
 To trial the code run `$ python perf_process.py`, this is useful for interactive development.
 
 Requirements
 ============
 
- * memory_profiler https://github.com/fabianp/memory_profiler 
+ * `memory_profiler` https://github.com/fabianp/memory_profiler 
+ * `perf stat` (Linux only)
 
 Tested on
 =========
 
  * IPython 2.1 with Python 2.7 on Linux 64bit
- * IPython 2.1 with Python 2.7 on Windows 64bit
+ * IPython 2.1 with Python 2.7 on Windows 64bit (no `perf` support)
 
 Problems
 ========
