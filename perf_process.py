@@ -68,7 +68,7 @@ class Test(unittest.TestCase):
 def run_capture_perf(pid):
     """Start a perf stat process monitoring pid every 100ms"""
     cmd = "perf stat --pid {pid} --event {event_type} -I 100".format(pid=pid, event_type=EVENT_TYPE)
-    print("run_capture_perf running:", cmd)  # debug message
+    #print("run_capture_perf running:", cmd)  # debug message
     proc = subprocess.Popen(cmd.split(), stderr=subprocess.PIPE)
     return proc
 

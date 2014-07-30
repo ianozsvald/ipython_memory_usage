@@ -36,7 +36,7 @@ def watch_memory():
         # pause if necessary to attempt to make sure we get a sample from perf...
         # as the 100ms min sample time and flushing oddness means I don't get a
         # sample very quickly for short-running tasks
-        MIN_TIME_TO_GET_PERF_SAMPLE = 0.3
+        MIN_TIME_TO_GET_PERF_SAMPLE = 0.2
         if time_delta_secs < MIN_TIME_TO_GET_PERF_SAMPLE:
             print("PAUSING to get perf sample for {}s".format(MIN_TIME_TO_GET_PERF_SAMPLE))
             time.sleep(MIN_TIME_TO_GET_PERF_SAMPLE)  # pause until at least 0.1s has passed
@@ -44,7 +44,8 @@ def watch_memory():
         perf_values = perf_process.finish_perf(perf_proc)
     cmd = In[nbr_commands-1]
     # convert the results into a pretty string
-    output_template = "'{cmd}' used {memory_delta:0.4f} MiB RAM in {time_delta:0.2f}s, peaked {peaked_memory_usage:0.2f} MiB above current, total RAM usage {memory_usage:0.2f} MiB"
+    #output_template = "'{cmd}' used {memory_delta:0.4f} MiB RAM in {time_delta:0.2f}s, peaked {peaked_memory_usage:0.2f} MiB above current, total RAM usage {memory_usage:0.2f} MiB"
+    output_template = "Used {memory_delta:0.4f} MiB RAM in {time_delta:0.2f}s, peaked {peaked_memory_usage:0.2f} MiB above current, total RAM usage {memory_usage:0.2f} MiB"
     output = output_template.format(time_delta=time_delta_secs,
                                     cmd=cmd,
                                     memory_delta=memory_delta,
@@ -53,7 +54,8 @@ def watch_memory():
     print(str(output))
     if perf_values:
         perf_average = int(sum(perf_values) / float(time_delta_secs))
-        print("perf value for {} averages to {:,}/second, raw samples:".format(perf_process.EVENT_TYPE, perf_average), perf_values)
+        #print("perf value for {} averages to {:,}/second, raw samples:".format(perf_process.EVENT_TYPE, perf_average), perf_values)
+        print("perf value for {} averages to {:,}/second".format(perf_process.EVENT_TYPE, perf_average))
     else:
         print("perf - no results to report, possibly the collection time was too short?")
     previous_call_memory_usage = new_memory_usage
