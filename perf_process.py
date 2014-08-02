@@ -14,15 +14,23 @@ FIXTURE2 = """     3.501390851        471,219,787 stalled-cycles-frontend\n  14.
 ANSWER2 = [471219787,  2249115]
 
 
-EVENT_TYPE = "cache-misses"
-#EVENT_TYPE = "stalled-cycles-frontend"
+EVENT_TYPE_CM = "cache-misses"
+EVENT_TYPE_SCF = "stalled-cycles-frontend"
+EVENT_TYPE_I = "instructions"
+EVENT_TYPES = set([EVENT_TYPE_CM, EVENT_TYPE_SCF, EVENT_TYPE_I])
+EVENT_TYPE = EVENT_TYPE_CM
 
 def process_line(line):
     """Process a single output line from perf-stat, extract only a value (skip help lines)"""
     line_bits = line.split()
+    print(line_bits)
     try:
         value = float(line_bits[1].replace(',', ''))
     except ValueError:
+        print(line_bits)
+        if line_bits[2] in EVENT_TYPES:
+            # we only get here if we've got a value and a key
+            key = line_bits[2]
         value = None
     except IndexError:
         value = None
