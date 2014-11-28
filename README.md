@@ -26,6 +26,17 @@ We can measure on every line how large array operations allocate and deallocate 
     In [4]: del a
     In [4] used -76.2031 MiB RAM in 0.10s, total RAM usage 57.05 MiB
 
+
+You can use `stop_watching_memory` to do stop watching and printing memory usage after each statement:
+
+    In [5]: imu.stop_watching_memory()
+
+    In [6]: b = np.ones(1e7)
+
+    In [7]: b[0] * 5.0
+    Out[7]: 5.0
+
+
 For the beginner with numpy it can be easy to work on copies of matrices which use a large amount of RAM. The following example sets the scene and then shows an in-place low-RAM variant.
 
 First we make a random square array and modify it twice using copies taking 2.3GB RAM:
