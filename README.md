@@ -156,6 +156,13 @@ Tested on
  * IPython 2.1 with Python 2.7 on Linux 64bit
  * IPython 2.1 with Python 2.7 on Windows 64bit (no `perf` support)
  * IPython 2.1 with Python 2.7 on OS X 10.10 Yosemite (no `perf` support)
+ * IPython 2.2 with Python 3.4 on LInux 64bit 
+
+TO FIX
+======
+
+ * merge perf variation into the main variation as some sort of plugin (so it doesn't interfere if per not installed or available)
+ * possibly try to add a counter for the size of the garbage collector, to see how many temp objects are made (disable gc first) on each command?
 
 Problems
 ========

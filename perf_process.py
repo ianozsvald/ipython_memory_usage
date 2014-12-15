@@ -5,6 +5,7 @@ from __future__ import print_function  # force use of print("hello")
 from __future__ import unicode_literals  # force unadorned strings "" to be unicode without prepending u""
 import subprocess
 import unittest
+import os
 
 FIXTURE0 = """     0.100167119              3,183 cache-misses   """
 ANSWER0 = 3183
@@ -93,13 +94,14 @@ def finish_perf(proc):
     # 0.200387519              4,232 cache-misses
     # 0.300540762              5,277 cache-misses
     # 0.400778748              3,916 cache-misses
+    stderrdata = stderrdata.decode('ascii')  # assume ascii
     values = process_lines(stderrdata)
     return values
 
 
 if __name__ == "__main__":
     # simple test for a hardcoded pid gathered over 0.5 seconds
-    pid = 4583
+    pid = os.getpid()
     print("Using pid:", pid)
     proc = run_capture_perf(pid)
     import time
