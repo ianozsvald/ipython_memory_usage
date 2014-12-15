@@ -109,14 +109,3 @@ def pre_run_cell():
     ipython_memory_usage_thread = threading.Thread(target=during_execution_memory_sampler)
     ipython_memory_usage_thread.daemon = True
     ipython_memory_usage_thread.start()
-
-
-if __name__ == "__main__":
-    if 'In' not in dir():
-        script_name = os.path.split(__file__)[1]
-        raise ValueError("You must run this from IPython interactively using"
-                         " e.g. '%run -i {}'".format(script_name))
-
-    ip = get_ipython()
-    # http://ipython.org/ipython-doc/dev/api/generated/IPython.core.events.html
-    start_watching_memory(ip)
