@@ -164,6 +164,7 @@ Tested on
  * IPython 2.1 with Python 2.7 on Linux 64bit (not tested in 2015)
  * IPython 2.1 with Python 2.7 on Windows 64bit (no `perf` support, not tested in 2015)
  * IPython 2.1 with Python 2.7 on OS X 10.10 Yosemite (no `perf` support, not tested in 2015)
+ * IPython 1.2 KNOWN NOT TO WORK
 
 TO FIX
 ======
