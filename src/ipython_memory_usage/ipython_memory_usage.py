@@ -10,6 +10,8 @@ import time
 import memory_profiler
 from IPython import get_ipython
 
+__version__ = 1.0  # set to desired value.
+
 # To run: %run -i ipython_memory_usage.py
 
 # keep a global accounting for the last known memory usage
