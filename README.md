@@ -10,6 +10,7 @@ As a simple example - make 10,000,000 random numbers, report that it costs 76MB 
     In [3]: arr=np.random.uniform(size=1E7)
     'arr=np.random.uniform(size=1E7)' used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
 
+Works with Python 3.4 and 2.7 with IPython 3.0 (and probably 2.x).
 
 Example usage
 =============
