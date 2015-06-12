@@ -8,6 +8,7 @@ from __future__ import unicode_literals  # force unadorned strings "" to be unic
 import os
 import time
 import memory_profiler
+from IPython import get_ipython
 import perf_process
 
 # keep a global accounting for the last known memory usage
@@ -18,12 +19,39 @@ keep_watching = True
 peak_memory_usage = -1
 perf_proc = None
 
+watching_memory = True
+input_cells = get_ipython().user_ns['In']
+
+
+def start_watching_memory():
+    """Register memory profiling tools to IPython instance."""
+    global watching_memory
+    watching_memory = True
+    ip = get_ipython()
+    ip.events.register("post_run_cell", watch_memory)
+    ip.events.register("pre_run_cell", pre_run_cell)
+
+
+def stop_watching_memory():
+    """Unregister memory profiling tools from IPython instance."""
+    global watching_memory
+    watching_memory = False
+    ip = get_ipython()
+    try:
+        ip.events.unregister("post_run_cell", watch_memory)
+    except ValueError:
+        pass
+    try:
+        ip.events.unregister("pre_run_cell", pre_run_cell)
+    except ValueError:
+        pass
 
 def watch_memory():
     import time
     # bring in the global memory usage value from the previous iteration
-    global previous_call_memory_usage, peak_memory_usage, keep_watching, perf_proc
-    nbr_commands = len(In)
+    global previous_call_memory_usage, peak_memory_usage, keep_watching, perf_proc, \
+           watching_memory, input_cells
+    #nbr_commands = len(In)
     new_memory_usage = memory_profiler.memory_usage()[0]
     memory_delta = new_memory_usage - previous_call_memory_usage
     keep_watching = False
@@ -42,7 +70,8 @@ def watch_memory():
             time.sleep(MIN_TIME_TO_GET_PERF_SAMPLE)  # pause until at least 0.1s has passed
         # if we have a valid perf running then capture that information
         perf_values = perf_process.finish_perf(perf_proc)
-    cmd = In[nbr_commands-1]
+    
+    cmd = ""  #In[nbr_commands-1]
     # convert the results into a pretty string
     #output_template = "'{cmd}' used {memory_delta:0.4f} MiB RAM in {time_delta:0.2f}s, peaked {peaked_memory_usage:0.2f} MiB above current, total RAM usage {memory_usage:0.2f} MiB"
     output_template = "Used {memory_delta:0.4f} MiB RAM in {time_delta:0.2f}s, peaked {peaked_memory_usage:0.2f} MiB above current, total RAM usage {memory_usage:0.2f} MiB"
@@ -101,15 +130,3 @@ def pre_run_cell():
 
     pid = os.getpid()
     perf_proc = perf_process.run_capture_perf(pid)
-
-
-
-if __name__ == "__main__":
-    if 'In' not in dir():
-        script_name = os.path.split(__file__)[1]
-        raise ValueError("You must run this from IPython interactively using e.g. '%run -i {}'".format(script_name))
-
-    ip = get_ipython()
-    # http://ipython.org/ipython-doc/dev/api/generated/IPython.core.events.html
-    ip.events.register("post_run_cell", watch_memory)
-    ip.events.register("pre_run_cell", pre_run_cell)
