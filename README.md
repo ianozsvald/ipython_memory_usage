@@ -1,9 +1,15 @@
 ipython_memory_usage
 ====================
 
-IPython tool to report memory usage deltas for every command you type. If you are running out of RAM then use this tool to understand what's happening.
+IPython tool to report memory usage deltas for every command you type. If you are running out of RAM then use this tool to understand what's happening. It also records the time spent running each command.
 
 This tool helps you to figure out which commands use a lot of RAM and take a long time to run, this is very useful if you're working with large numpy matrices. In addition it reports the peak memory usage whilst a command is running which might be higher (due to temporary objects) than the final RAM usage. Built on @fabianp's `memory_profiler`.
+
+As a simple example - make 10,000,000 random numbers, report that it costs 76MB of RAM and took 0.3 seconds to execute:
+
+    In [3]: arr=np.random.uniform(size=1E7)
+    'arr=np.random.uniform(size=1E7)' used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
+
 
 Example usage
 =============
@@ -123,14 +129,15 @@ To trial the code run `$ python perf_process.py`, this is useful for interactive
 Requirements
 ============
 
- * `memory_profiler` https://github.com/fabianp/memory_profiler 
- * `perf stat` (Linux only)
+ * `memory_profiler` https://github.com/fabianp/memory_profiler   (`pip install memory_profiler`)
+ * `perf stat` (Linux only, installed outside of Python using e.g. Synaptic, apt-get etc)
 
 Tested on
 =========
 
- * IPython 2.1 with Python 2.7 on Linux 64bit
- * IPython 2.1 with Python 2.7 on Windows 64bit (no `perf` support)
+ * IPython 3.0 with Python 3.4 on Linux 64bit (2015-06)
+ * IPython 2.2 with Python 2.7 on Linux 64bit (2015-06)
+ * IPython 2.1 with Python 2.7 on Windows 64bit (no `perf` support, not tested in 2015)
 
 Problems
 ========
@@ -138,3 +145,4 @@ Problems
  * I can't figure out how to hook into live In prompt (at least - I can for static output, not for a dynamic output - see the code and the commented out blocks referring to `watch_memory_prompt`)
  * I haven't figured out how to disable the tool - probably an `argparse` with an option to disable would be a nice start which disables the hooks?
  * Needs a `setup.py` to install it
+ * An `events.unregister` (like in https://github.com/cpcloud/ipython-autotime/blob/master/autotime.py) would be nice
