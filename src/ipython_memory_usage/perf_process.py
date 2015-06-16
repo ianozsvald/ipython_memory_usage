@@ -24,11 +24,10 @@ EVENT_TYPE = EVENT_TYPE_CM
 def process_line(line):
     """Process a single output line from perf-stat, extract only a value (skip help lines)"""
     line_bits = line.split()
-    print(line_bits)
+    #print(line_bits)
     try:
         value = float(line_bits[1].replace(',', ''))
     except ValueError:
-        print(line_bits)
         if line_bits[2] in EVENT_TYPES:
             # we only get here if we've got a value and a key
             key = line_bits[2]
