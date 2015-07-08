@@ -12,6 +12,8 @@ As a simple example - make 10,000,000 random numbers, report that it costs 76MB 
 
 Works with Python 3.4 and 2.7 with IPython 3.0 (and probably 2.x).
 
+Francesc Alted has a fork with more memory delta details, see it here: https://github.com/FrancescAlted/ipython_memwatcher
+
 Example usage
 =============
 
