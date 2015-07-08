@@ -14,12 +14,23 @@ Works with Python 3.4 and 2.7 with IPython 3.0 (and probably 2.x).
 
 Francesc Alted has a fork with more memory delta details, see it here: https://github.com/FrancescAlted/ipython_memwatcher
 
+Setup
+=====
+
+Take a copy of the code or pull from https://github.com/ianozsvald/ipython_memory_usage and then:
+
+    $ python setup.py install
+
+To uninstall:
+
+    $ pip uninstall ipython_memory_usage
+
 Example usage
 =============
 
 We can measure on every line how large array operations allocate and deallocate memory:
 
-    $ ipython --pylab
+    $ ipython
     Python 3.4.3 |Anaconda 2.3.0 (64-bit)| (default, Jun  4 2015, 15:29:08) 
     IPython 3.2.0 -- An enhanced Interactive Python.
 
@@ -181,5 +192,4 @@ Problems
 ========
 
  * I can't figure out how to hook into live In prompt (at least - I can for static output, not for a dynamic output - see the code and the commented out blocks referring to `watch_memory_prompt`)
- * Needs a `setup.py` to install it
- * An `events.unregister` (like in https://github.com/cpcloud/ipython-autotime/blob/master/autotime.py) would be nice
+ * `python setup.py develop` will give you a sym-link from your environment back to this development folder, do this if you'd like to work on the project
