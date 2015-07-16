@@ -10,16 +10,22 @@ As a simple example - make 10,000,000 random numbers, report that it costs 76MB 
     In [3]: arr=np.random.uniform(size=1E7)
     'arr=np.random.uniform(size=1E7)' used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
 
-Works with Python 3.4 and 2.7 with IPython 3.0 (and probably 2.x).
-
 Francesc Alted has a fork with more memory delta details, see it here: https://github.com/FrancescAlted/ipython_memwatcher
 
 Setup
 =====
 
+Supported: Python 3.4 and IPython 3.2+
+
+Unsupported: Python 2.7 (the code used to work, it might now, I won't invest time here, you're welcome to fork it though)
+
 Take a copy of the code or pull from https://github.com/ianozsvald/ipython_memory_usage and then:
 
     $ python setup.py install
+
+If you pull it from github and you want to develop on it, it is easier to make a link in `site-packages` and develop it locally with:
+
+    $ python setup.py develop 
 
 To uninstall:
 
