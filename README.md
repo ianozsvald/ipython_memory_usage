@@ -95,13 +95,13 @@ If we make a large 1.5GB array of random integers we can `sqrt` in-place using t
     In [2] used 1525.8984 MiB RAM in 6.51s, peaked 0.00 MiB above current, total RAM usage 1575.26 MiB
 
     In [3]: a = np.sqrt(a)
-    In [3] used 0.0430 MiB RAM in 1.93s, peaked 0.00 MiB above current, total RAM usage 1576.21 MiB
+    In [3] used 0.097 MiB RAM in 1.53s, peaked 1442.92 MiB above current, total RAM usage 1576.21 MiB
 
     In [4]: a = np.sqrt(a, out=a)
-    In [4] used 0.1875 MiB RAM in 1.51s, peaked 0.00 MiB above current, total RAM usage 1575.44 MiB
+    In [4] used 0.0234 MiB RAM in 0.51s, peaked 0.00 MiB above current, total RAM usage 1575.44 MiB
 
     In [5]: b = np.sqrt(a)
-    In [5] used 1525.8828 MiB RAM in 1.67s, peaked 0.00 MiB above current, total RAM usage 3101.32 MiB
+    In [5] used 1525.8828 MiB RAM in 1.27s, peaked 0.00 MiB above current, total RAM usage 3101.32 MiB
 
 
 We can also see the hidden temporary objects that are created _during_ the execution of a command. Below you can see that whilst `d = a * b + c` takes 3.1GB overall, it peaks at approximately 3.7GB due to the 5th temporary matrix which holds the temporary result of `a * b`.
