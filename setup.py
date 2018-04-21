@@ -23,14 +23,18 @@ Topic :: Software Development :: Testing
 from setuptools import setup, find_packages
 setup(
     name="ipython_memory_usage",
-    version="1.0",
+    version="1.1",
     url="https://github.com/ianozsvald/ipython_memory_usage",
     author="Ian Ozsvald",
     author_email="ian@ianozsvald.com",
     maintainer="Ian Ozsvald",
     maintainer_email="ian@ianozsvald.com",
     description=doclines[0],
-    long_description="""# Markdown supported!\n\n* Cheer\n* Celebrate\n""",
+    long_description = """IPython tool to report memory usage deltas for every command you type. If you are running out of RAM then use this tool to understand what's happening. It also records the time spent running each command. \n
+
+        In [3]: arr=np.random.uniform(size=int(1e7))\n
+        'arr=np.random.uniform(size=int(1e7))' used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
+    """,
     long_description_content_type='text/markdown',
     classifiers=filter(None, classifiers.split("\n")),
     platforms=["Any."],

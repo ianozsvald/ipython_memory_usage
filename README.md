@@ -223,3 +223,8 @@ Problems
 
  * I can't figure out how to hook into live In prompt (at least - I can for static output, not for a dynamic output - see the code and the commented out blocks referring to `watch_memory_prompt`)
  * `python setup.py develop` will give you a sym-link from your environment back to this development folder, do this if you'd like to work on the project
+
+Notes to Ian
+============
+
+To push to PyPI I need to follow https://docs.python.org/3/distributing/index.html#distributing-index - specifically `python setup.py sdist` and `twine upload dist/*`. This uses https://pypi.org/project/twine/ .
