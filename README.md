@@ -68,8 +68,7 @@ For the beginner with numpy it can be easy to work on copies of matrices which u
 First we make a random square array and modify it twice using copies taking 2.3GB RAM:
     
     In [1]: imu.start_watching_memory()
-    
-    In [2]: a = np.random.random((int(1e4),int(1e4)))
+    In [2]: a = np.random.random((int(1e4),int(1e4)))
     In [2] used 762.9531 MiB RAM in 2.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
 
     In [3]: b = a*2
