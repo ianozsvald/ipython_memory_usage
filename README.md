@@ -41,8 +41,7 @@ We can measure on every line how large array operations allocate and deallocate 
     IPython 3.2.0 -- An enhanced Interactive Python.
 
     In [1]: import ipython_memory_usage.ipython_memory_usage as imu
-    
-    In [2]: import numpy as np
+    In [2]: import numpy as np
 
     In [3]: imu.start_watching_memory()
     In [3] used 0.0469 MiB RAM in 7.32s, peaked 0.00 MiB above current, total RAM usage 56.88 MiB
