@@ -110,7 +110,7 @@ We can also see the hidden temporary objects that are created _during_ the execu
     In [2] used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
 
     In [3]: d = a * b + c
-    In [3] used 762.9453 MiB RAM in 0.91s, peaked 667.91 MiB above current, total RAM usage 3101.01 MiB
+    In [3] used 762.9453 MiB RAM in 0.71s, peaked 0.00 MiB above current, total RAM usage 3101.01 MiB
 
 Knowing that a temporary is created, we can do an in-place operation instead for the same result but a lower overall RAM footprint:
 
