@@ -7,8 +7,8 @@ This tool helps you to figure out which commands use a lot of RAM and take a lon
 
 As a simple example - make 10,000,000 random numbers, report that it costs 76MB of RAM and took 0.3 seconds to execute:
 
-    In [3]: arr=np.random.uniform(size=1E7)
-    'arr=np.random.uniform(size=1E7)' used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
+    In [3]: arr=np.random.uniform(size=int(1e7))
+    'arr=np.random.uniform(size=int(1e7))' used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
 
 Francesc Alted has a fork with more memory delta details, see it here: https://github.com/FrancescAlted/ipython_memwatcher
 
@@ -41,32 +41,34 @@ We can measure on every line how large array operations allocate and deallocate 
     IPython 3.2.0 -- An enhanced Interactive Python.
 
     In [1]: import ipython_memory_usage.ipython_memory_usage as imu
+    In [2]: import numpy as np
 
-    In [2]: imu.start_watching_memory()
-    In [2] used 0.0469 MiB RAM in 7.32s, peaked 0.00 MiB above current, total RAM usage 56.88 MiB
+    In [3]: imu.start_watching_memory()
+    In [3] used 0.0469 MiB RAM in 7.32s, peaked 0.00 MiB above current, total RAM usage 56.88 MiB
 
-    In [3]: a = np.ones(1e7)
-    In [3] used 76.3750 MiB RAM in 0.14s, peaked 0.00 MiB above current, total RAM usage 133.25 MiB
+    In [4]: a = np.ones(int(1e7))
+    In [4] used 76.3750 MiB RAM in 0.14s, peaked 0.00 MiB above current, total RAM usage 133.25 MiB
 
-    In [4]: del a
-    In [4] used -76.2031 MiB RAM in 0.10s, total RAM usage 57.05 MiB
+    In [5]: del a
+    In [5] used -76.2031 MiB RAM in 0.10s, total RAM usage 57.05 MiB
 
 
 You can use `stop_watching_memory` to do stop watching and printing memory usage after each statement:
 
-    In [5]: imu.stop_watching_memory()
+    In [6]: imu.stop_watching_memory()
 
-    In [6]: b = np.ones(1e7)
+    In [7]: b = np.ones(int(1e7))
 
-    In [7]: b[0] * 5.0
-    Out[7]: 5.0
+    In [8]: b[0] * 5.0
+    Out[8]: 5.0
 
 
 For the beginner with numpy it can be easy to work on copies of matrices which use a large amount of RAM. The following example sets the scene and then shows an in-place low-RAM variant.
 
 First we make a random square array and modify it twice using copies taking 2.3GB RAM:
-
-    In [2]: a = np.random.random((1e4, 1e4))
+    
+    In [1]: imu.start_watching_memory()
+    In [2]: a = np.random.random((int(1e4),int(1e4)))
     In [2] used 762.9531 MiB RAM in 2.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
 
     In [3]: b = a*2
@@ -78,7 +80,7 @@ First we make a random square array and modify it twice using copies taking 2.3G
 
 Now we do the same operations but in-place on `a`, using 813MB RAM in total:
 
-    In [2]: a = np.random.random((1e4, 1e4))
+    In [2]: a = np.random.random((int(1e4),int(1e4)))
     In [2] used 762.9531 MiB RAM in 2.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
     In [3]: a *= 2
     In [3] used 0.0078 MiB RAM in 0.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
@@ -104,7 +106,7 @@ If we make a large 1.5GB array of random integers we can `sqrt` in-place using t
 
 We can also see the hidden temporary objects that are created _during_ the execution of a command. Below you can see that whilst `d = a * b + c` takes 3.1GB overall, it peaks at approximately 3.7GB due to the 5th temporary matrix which holds the temporary result of `a * b`.
 
-    In [2]: a = np.ones(1e8); b = np.ones(1e8); c = np.ones(1e8)
+    In [2]: a = np.ones(int(1e8)); b = np.ones(int(1e8)); c = np.ones(int(1e8))
     In [2] used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
 
     In [3]: d = a * b + c
@@ -112,7 +114,7 @@ We can also see the hidden temporary objects that are created _during_ the execu
 
 Knowing that a temporary is created, we can do an in-place operation instead for the same result but a lower overall RAM footprint:
 
-    In [2]: a = np.ones(1e8); b = np.ones(1e8); c = np.ones(1e8)
+    In [2]: a = np.ones(int(1e8)); b = np.ones(int(1e8)); c = np.ones(int(1e8))
     In [2] used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
 
     In [3]: d = a * b
@@ -141,8 +143,8 @@ I've added experimental support for the `perf stat` tool on Linux. To use it mak
 
 Here's an example that builds on the previous ones. We build a square matrix with C ordering, we also need a 1D vector of the same size:
 
-    In [3]: ones_c = np.ones((1e4, 1e4))
-    In [4]: v = np.ones(1e4)
+    In [3]: ones_c = np.ones((int(1e4),int(1e4)))
+    In [4]: v = np.ones(int(1e4))
 
 Next we run `%timeit` using all the data in row 0. The data will reasonably fit into a cache as `v.nbytes == 80000` (80 kilobytes) and my L3 cache is 6MB. The report `perf value for cache-misses averages to 8,823/second` shows an average of 8k cache misses per seconds during this operation (followed by all the raw sampled events for reference). `%timeit` shows that this operation cost 14 microseconds per loop:
 
