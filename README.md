@@ -7,8 +7,8 @@ This tool helps you to figure out which commands use a lot of RAM and take a lon
 
 As a simple example - make 10,000,000 random numbers, report that it costs 76MB of RAM and took 0.3 seconds to execute:
 
-    In [3]: arr=np.random.uniform(size=1E7)
-    'arr=np.random.uniform(size=1E7)' used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
+    In [3]: arr=np.random.uniform(size=int(1e7))
+    'arr=np.random.uniform(size=int(1e7))' used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
 
 Francesc Alted has a fork with more memory delta details, see it here: https://github.com/FrancescAlted/ipython_memwatcher
 
