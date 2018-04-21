@@ -104,7 +104,9 @@ If we make a large 1.5GB array of random integers we can `sqrt` in-place using t
     In [5] used 1525.8828 MiB RAM in 1.27s, peaked 0.00 MiB above current, total RAM usage 3101.32 MiB
 
 
-We can also see the hidden temporary objects that are created _during_ the execution of a command. Below you can see that whilst `d = a * b + c` takes 3.1GB overall, it peaks at approximately 3.7GB due to the 5th temporary matrix which holds the temporary result of `a * b`.
+Newer versions of Numpy use temporary objects which provide memory optimisation, see https://docs.scipy.org/doc/numpy-1.13.0/release.html
+
+We see this behaviour in the output below. Prior to version 1.13 we would see a peak memory greater than 0.00MiB above current. Older versions of Numpy and Windows will precipitate differing memory usage due to temporary matrices. 
 
     In [2]: a = np.ones(int(1e8)); b = np.ones(int(1e8)); c = np.ones(int(1e8))
     In [2] used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
