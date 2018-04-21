@@ -19,7 +19,11 @@ Supported: Python 3.4 and IPython 3.2+
 
 Unsupported: Python 2.7 (the code used to work, it might now, I won't invest time here, you're welcome to fork it though)
 
-Simple - `$ pip install ipython_memory_sage` via https://pypi.org/project/ipython-memory-usage/
+Simple: 
+
+`$ pip install ipython_memory_usage` 
+
+via https://pypi.org/project/ipython-memory-usage/
 
 OR
 
