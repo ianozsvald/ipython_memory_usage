@@ -196,7 +196,7 @@ Tested on
  Acknowledgements
  ================
  
- Many thanks to https://github.com/manahl/ for hosting a hackathon (2018-04) that lead to us publishing `ipython_memory_usage` to PyPi: https://pypi.org/project/ipython-memory-usage/ . Props to my colleagues for helping me fix the docs and upload to PyPI:
+ Many thanks to https://github.com/manahl/ for hosting a hackathon (2018-04) that led to us publishing `ipython_memory_usage` to PyPi: https://pypi.org/project/ipython-memory-usage/ . Props to my colleagues for helping me fix the docs and upload to PyPI:
 * https://github.com/pawellee
 * https://github.com/takumab
 * https://github.com/Hexal7785 (Hetal)
