@@ -16,6 +16,10 @@ Relevant documentation: https://docs.conda.io/projects/conda-build/en/latest/use
     
     # Build package locally
     conda-build recipe/meta.yaml
+    
+    # Check Smithy [Requires conda-smithy: `conda install -n root -c conda-forge conda-smithy`]
+    cd recipe
+    conda smithy recipe-lint
 
     # Test package locally
     conda install --use-local ipython_memory_usage
@@ -49,6 +53,10 @@ Make sure to update the version number and if not building locally pin the requs
 ## Deploying to Conda Forge
 In order to deploy to conda forge, follow the instructions on https://conda-forge.org/#contribute
 
-At present fork and update the package on conda-forge/staged-recipes.
+Fork https://github.com/conda-forge/staged-recipes
 
-Ensure that maintainers are correct in the meta.yaml file.
+Add meta.yaml to recipes/ipython_memory_usage .
+
+Make sure meta-yaml uses a source package (url: .... tar.gz), not git!
+
+Create a pull request.

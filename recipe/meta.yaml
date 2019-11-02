@@ -6,17 +6,24 @@ source:
   git_rev: b36bcc2f85a49dc33eec125d541fe8bee6b67cfd
   git_url: https://github.com/ianozsvald/ipython_memory_usage
 
+build:
+  number: 0
+
 requirements:
   build:
     - python
     - setuptools
     - memory_profiler
-    - IPython>=2.1
+    - IPython >=2.1
 
   run:
     - python
     - memory_profiler
-    - IPython>=2.1
+    - IPython >=2.1
+
+test:
+  imports:
+   - ipython_memory_usage
 
 about:
   home: https://github.com/ianozsvald/ipython_memory_usage
@@ -27,3 +34,7 @@ about:
     - IPython tool to report memory usage deltas for every command you type. If you are running out of RAM then use this tool to understand what’s happening. It also records the time spent running each command.
     - In [3]: arr=np.random.uniform(size=int(1e7))
     -   ‘arr=np.random.uniform(size=int(1e7))’ used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
+
+extra:
+  recipe-maintainers:
+    - Ian Ozsvald
