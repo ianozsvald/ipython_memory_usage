@@ -15,7 +15,7 @@ Francesc Alted has a fork with more memory delta details, see it here: https://g
 Setup
 =====
 
-Supported: Python 3.4 and IPython 3.2+
+Supported: Python 3.7 and IPython 7.9+
 
 Unsupported: Python 2.7 (the code used to work, it might now, I won't invest time here, you're welcome to fork it though)
 
