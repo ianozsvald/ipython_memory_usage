@@ -200,7 +200,28 @@ Tested on
  * IPython 2.1 with Python 2.7 on Windows 64bit (no `perf` support, not tested in 2015)
  * IPython 2.1 with Python 2.7 on OS X 10.10 Yosemite (no `perf` support, not tested in 2015)
  * IPython 1.2 KNOWN NOT TO WORK
- 
+
+Developer installation notes
+============================
+
+These notes are for the Man AHL 2019 Hackathon.
+
+```
+conda create -n hackathon_ipython_memory_usage python=3.7
+conda activate hackathon_ipython_memory_usage
+conda install ipython numpy memory_profiler
+
+mkdir hackathon_ipython_memory_usage
+cd hackathon_ipython_memory_usage/
+git clone git@github.com:ianozsvald/ipython_memory_usage.git
+
+# note "develop" and not the usual "install" here, to make the local folder editable!
+python setup.py develop 
+
+# now run ipython and follow the examples from further above in this README
+```
+
+
  Acknowledgements
  ================
  
