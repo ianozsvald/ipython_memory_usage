@@ -44,95 +44,120 @@ Example usage
 
 We can measure on every line how large array operations allocate and deallocate memory:
 
-    $ ipython
-    Python 3.4.3 |Anaconda 2.3.0 (64-bit)| (default, Jun  4 2015, 15:29:08) 
-    IPython 3.2.0 -- An enhanced Interactive Python.
+using with magic:
+```
+$ ipython
+In [1]: import ipython_memory_usage 
+In [1] %ipython_memory_usage_start                                                                                 
 
-    In [1]: import ipython_memory_usage.ipython_memory_usage as imu
-    In [2]: import numpy as np
+Out[1]: 'memory profile enabled'
+In [1] used 0.2383 MiB RAM in 0.11s, peaked 0.00 MiB above current, total RAM usage 47.64 MiB
 
-    In [3]: imu.start_watching_memory()
-    In [3] used 0.0469 MiB RAM in 7.32s, peaked 0.00 MiB above current, total RAM usage 56.88 MiB
+In [2]: import numpy as np 
+...: a = np.ones(int(1e7))                                                                                       
+In [2] used 85.9180 MiB RAM in 0.22s, peaked 0.00 MiB above current, total RAM usage 133.56 MiB
 
-    In [4]: a = np.ones(int(1e7))
-    In [4] used 76.3750 MiB RAM in 0.14s, peaked 0.00 MiB above current, total RAM usage 133.25 MiB
+In [3]: %ipython_memory_usage_stop                                                                                  
+Out[3]: 'memory profile disabled'
 
-    In [5]: del a
-    In [5] used -76.2031 MiB RAM in 0.10s, total RAM usage 57.05 MiB
+In [4]: a = np.ones(int(1e7))  
+```
 
+using with function call:
+```
+$ ipython
+Python 3.4.3 |Anaconda 2.3.0 (64-bit)| (default, Jun  4 2015, 15:29:08) 
+IPython 3.2.0 -- An enhanced Interactive Python.
 
-You can use `stop_watching_memory` to do stop watching and printing memory usage after each statement:
+In [1]: import ipython_memory_usage.ipython_memory_usage as imu
+In [2]: import numpy as np
 
-    In [6]: imu.stop_watching_memory()
+In [3]: imu.start_watching_memory()
+In [3] used 0.0469 MiB RAM in 7.32s, peaked 0.00 MiB above current, total RAM usage 56.88 MiB
 
-    In [7]: b = np.ones(int(1e7))
+In [4]: a = np.ones(int(1e7))
+In [4] used 76.3750 MiB RAM in 0.14s, peaked 0.00 MiB above current, total RAM usage 133.25 MiB
 
-    In [8]: b[0] * 5.0
-    Out[8]: 5.0
+In [5]: del a
+In [5] used -76.2031 MiB RAM in 0.10s, total RAM usage 57.05 MiB
+
+In [6]: imu.stop_watching_memory()
+
+In [7]: b = np.ones(int(1e7))
+
+In [8]: b[0] * 5.0
+Out[8]: 5.0
+```
+
 
 
 For the beginner with numpy it can be easy to work on copies of matrices which use a large amount of RAM. The following example sets the scene and then shows an in-place low-RAM variant.
 
 First we make a random square array and modify it twice using copies taking 2.3GB RAM:
-    
-    In [1]: imu.start_watching_memory()
-    In [2]: a = np.random.random((int(1e4),int(1e4)))
-    In [2] used 762.9531 MiB RAM in 2.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
+```    
+In [1]: imu.start_watching_memory()
+In [2]: a = np.random.random((int(1e4),int(1e4)))
+In [2] used 762.9531 MiB RAM in 2.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
 
-    In [3]: b = a*2
-    In [3] used 762.9492 MiB RAM in 0.51s, peaked 0.00 MiB above current, total RAM usage 1575.25 MiB
+In [3]: b = a*2
+In [3] used 762.9492 MiB RAM in 0.51s, peaked 0.00 MiB above current, total RAM usage 1575.25 MiB
 
-    In [4]: c = np.sqrt(b)
-    In [4] used 762.9609 MiB RAM in 0.91s, peaked 0.00 MiB above current, total RAM usage 2338.21 MiB
+In [4]: c = np.sqrt(b)
+In [4] used 762.9609 MiB RAM in 0.91s, peaked 0.00 MiB above current, total RAM usage 2338.21 MiB
+```
 
 
 Now we do the same operations but in-place on `a`, using 813MB RAM in total:
-
-    In [2]: a = np.random.random((int(1e4),int(1e4)))
-    In [2] used 762.9531 MiB RAM in 2.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
-    In [3]: a *= 2
-    In [3] used 0.0078 MiB RAM in 0.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
-    In [4]: a = np.sqrt(a, out=a)
-    In [4] used 0.0859 MiB RAM in 0.71s, peaked 0.00 MiB above current, total RAM usage 813.46 MiB
+```
+In [2]: a = np.random.random((int(1e4),int(1e4)))
+In [2] used 762.9531 MiB RAM in 2.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
+In [3]: a *= 2
+In [3] used 0.0078 MiB RAM in 0.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
+In [4]: a = np.sqrt(a, out=a)
+In [4] used 0.0859 MiB RAM in 0.71s, peaked 0.00 MiB above current, total RAM usage 813.46 MiB
+```
 
 Lots of `numpy` functions have in-place operations that can assign their result back into themselves (see the `out` argument): http://docs.scipy.org/doc/numpy/reference/ufuncs.html#available-ufuncs
 
 If we make a large 1.5GB array of random integers we can `sqrt` in-place using two approaches or assign the result to a new object `b` which doubles the RAM usage:
+```
+In [2]: a = np.random.randint(low=0, high=5, size=(10000, 20000))
+In [2] used 1525.8984 MiB RAM in 6.51s, peaked 0.00 MiB above current, total RAM usage 1575.26 MiB
 
-    In [2]: a = np.random.randint(low=0, high=5, size=(10000, 20000))
-    In [2] used 1525.8984 MiB RAM in 6.51s, peaked 0.00 MiB above current, total RAM usage 1575.26 MiB
+In [3]: a = np.sqrt(a)
+In [3] used 0.097 MiB RAM in 1.53s, peaked 1442.92 MiB above current, total RAM usage 1576.21 MiB
 
-    In [3]: a = np.sqrt(a)
-    In [3] used 0.097 MiB RAM in 1.53s, peaked 1442.92 MiB above current, total RAM usage 1576.21 MiB
+In [4]: a = np.sqrt(a, out=a)
+In [4] used 0.0234 MiB RAM in 0.51s, peaked 0.00 MiB above current, total RAM usage 1575.44 MiB
 
-    In [4]: a = np.sqrt(a, out=a)
-    In [4] used 0.0234 MiB RAM in 0.51s, peaked 0.00 MiB above current, total RAM usage 1575.44 MiB
-
-    In [5]: b = np.sqrt(a)
-    In [5] used 1525.8828 MiB RAM in 1.27s, peaked 0.00 MiB above current, total RAM usage 3101.32 MiB
+In [5]: b = np.sqrt(a)
+In [5] used 1525.8828 MiB RAM in 1.27s, peaked 0.00 MiB above current, total RAM usage 3101.32 MiB
+```
 
 
 Newer versions of Numpy use temporary objects which provide memory optimisation, see https://docs.scipy.org/doc/numpy-1.13.0/release.html
 
 We see this behaviour in the output below. Prior to version 1.13 we would see a peak memory greater than 0.00MiB above current. Older versions of Numpy and Windows will precipitate differing memory usage due to temporary matrices. 
+```
+In [2]: a = np.ones(int(1e8)); b = np.ones(int(1e8)); c = np.ones(int(1e8))
+In [2] used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
 
-    In [2]: a = np.ones(int(1e8)); b = np.ones(int(1e8)); c = np.ones(int(1e8))
-    In [2] used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
-
-    In [3]: d = a * b + c
-    In [3] used 762.9453 MiB RAM in 0.71s, peaked 0.00 MiB above current, total RAM usage 3101.01 MiB
+In [3]: d = a * b + c
+In [3] used 762.9453 MiB RAM in 0.71s, peaked 0.00 MiB above current, total RAM usage 3101.01 MiB
+```
 
 Knowing that a temporary is created, we can do an in-place operation instead for the same result but a lower overall RAM footprint:
+```
+In [2]: a = np.ones(int(1e8)); b = np.ones(int(1e8)); c = np.ones(int(1e8))
+In [2] used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
 
-    In [2]: a = np.ones(int(1e8)); b = np.ones(int(1e8)); c = np.ones(int(1e8))
-    In [2] used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
+In [3]: d = a * b
+In [3] used 762.9453 MiB RAM in 0.49s, peaked 0.00 MiB above current, total RAM usage 3101.00 MiB
 
-    In [3]: d = a * b
-    In [3] used 762.9453 MiB RAM in 0.49s, peaked 0.00 MiB above current, total RAM usage 3101.00 MiB
+In [4]: d += c
+In [4] used 0.0000 MiB RAM in 0.25s, peaked 0.00 MiB above current, total RAM usage 3101.00 MiB
 
-    In [4]: d += c
-    In [4] used 0.0000 MiB RAM in 0.25s, peaked 0.00 MiB above current, total RAM usage 3101.00 MiB
-
+```
 For more on this example see `Tip` at http://docs.scipy.org/doc/numpy/reference/ufuncs.html#available-ufuncs .
 
 Important RAM usage note
@@ -145,16 +170,18 @@ Experimental perf stat report to monitor caching
 ================================================
 
 I've added experimental support for the `perf stat` tool on Linux. To use it make sure that `perf stat` runs at the command line first. Experimental support of the `cache-misses` event is enabled in this variant script (to use this `cd src/ipython_memory_usage` first):
-
-    Python 3.4.3 |Anaconda 2.3.0 (64-bit)| (default, Jun  4 2015, 15:29:08) 
-    IPython 3.2.0 -- An enhanced Interactive Python.
-    In [1]: %run -i ipython_memory_usage_perf.py
-    In [2]: start_watching_memory()
+```
+Python 3.4.3 |Anaconda 2.3.0 (64-bit)| (default, Jun  4 2015, 15:29:08) 
+IPython 3.2.0 -- An enhanced Interactive Python.
+In [1]: %run -i ipython_memory_usage_perf.py
+In [2]: start_watching_memory()
+```
 
 Here's an example that builds on the previous ones. We build a square matrix with C ordering, we also need a 1D vector of the same size:
-
-    In [3]: ones_c = np.ones((int(1e4),int(1e4)))
-    In [4]: v = np.ones(int(1e4))
+```
+In [3]: ones_c = np.ones((int(1e4),int(1e4)))
+In [4]: v = np.ones(int(1e4))
+```
 
 Next we run `%timeit` using all the data in row 0. The data will reasonably fit into a cache as `v.nbytes == 80000` (80 kilobytes) and my L3 cache is 6MB. The report `perf value for cache-misses averages to 8,823/second` shows an average of 8k cache misses per seconds during this operation (followed by all the raw sampled events for reference). `%timeit` shows that this operation cost 14 microseconds per loop:
 
