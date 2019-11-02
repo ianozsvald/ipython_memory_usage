@@ -193,6 +193,7 @@ Requirements
 Tested on
 =========
 
+ * IPython 7.9 with Python 3.7 on Windows 64bit (2019-11)
  * IPython 3.6 with Python 3.6 on Linux 64bit and Macs (2018-04)
  * IPython 3.2 with Python 3.4 on Linux 64bit (2015-06)
  * IPython 2.2 with Python 2.7 on Linux 64bit (2015-06)
