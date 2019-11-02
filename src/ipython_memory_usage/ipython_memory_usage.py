@@ -22,6 +22,10 @@ input_cells = get_ipython().user_ns['In']
 def start_watching_memory():
     """Register memory profiling tools to IPython instance."""
     global watching_memory
+
+    # Just in case start is called more than once, stop watching. Hence unregister events
+    stop_watching_memory()
+
     watching_memory = True
     ip = get_ipython()
     ip.events.register("post_run_cell", watch_memory)
