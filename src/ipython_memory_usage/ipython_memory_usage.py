@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Profile mem usage envelope of IPython commands and report interactively"""
-from __future__ import division  # 1/2 == 0.5, as in Py3
-from __future__ import absolute_import  # avoid hiding global modules with locals
-from __future__ import print_function  # force use of print("hello")
-from __future__ import unicode_literals  # force unadorned strings "" to be unicode without prepending u""
 import os
 import time
 import memory_profiler
 from IPython import get_ipython
 
-__version__ = 1.0  # set to desired value.
+__version__ = 1.1  # set to desired value.
 
 # To run: %run -i ipython_memory_usage.py
 
@@ -49,6 +45,7 @@ def stop_watching_memory():
 
 
 def watch_memory():
+    """Prints the memory usage if watching the memory"""
     # bring in the global memory usage value from the previous iteration
     global previous_call_memory_usage, peak_memory_usage, keep_watching, \
            watching_memory, input_cells
@@ -77,6 +74,7 @@ def watch_memory():
 
 
 def during_execution_memory_sampler():
+    """Thread to sample memory usage"""
     import time
     import memory_profiler
     global keep_watching, peak_memory_usage
