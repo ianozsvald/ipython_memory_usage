@@ -5,7 +5,7 @@ from __future__ import division  # 1/2 == 0.5, as in Py3
 from __future__ import absolute_import  # avoid hiding global modules with locals
 from __future__ import print_function  # force use of print("hello")
 from __future__ import unicode_literals  # force unadorned strings "" to be unicode without prepending u""
-import os
+
 import time
 import memory_profiler
 from IPython import get_ipython
@@ -17,7 +17,7 @@ __version__ = 1.0  # set to desired value.
 # keep a global accounting for the last known memory usage
 # which is the reference point for the memory delta calculation
 previous_call_memory_usage = memory_profiler.memory_usage()[0]
-t1 = time.time() # will be set to current time later
+t1 = time.time()  # will be set to current time later
 keep_watching = True
 peak_memory_usage = -1
 watching_memory = True
