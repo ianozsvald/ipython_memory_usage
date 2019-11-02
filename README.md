@@ -251,6 +251,14 @@ python setup.py develop
  Acknowledgements
  ================
  
+ Many thanks to https://github.com/manahl/ for hosting their 2019-11 hackathon. Here we removed old Python 2.x code, added an IPython magic, validated that Python 3.8 is supported and (very nearly) have a working conda recipe. Thanks to my colleagues:
+ * https://github.com/ps-git
+ * https://github.com/erdincmutlu
+ * https://github.com/Stefannn
+ * https://github.com/valmal
+ * https://github.com/PauleGef
+ * Elices 
+
  Many thanks to https://github.com/manahl/ for hosting a hackathon (2018-04) that led to us publishing `ipython_memory_usage` to PyPi: https://pypi.org/project/ipython-memory-usage/ . Props to my colleagues for helping me fix the docs and upload to PyPI:
 * https://github.com/pawellee
 * https://github.com/takumab
