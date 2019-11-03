@@ -266,6 +266,7 @@ python setup.py develop
 * https://github.com/robmarkcole
 * https://github.com/pmalde
 * https://github.com/LucijaGregov
+* https://github.com/xhochy
 
 TO FIX
 ======
