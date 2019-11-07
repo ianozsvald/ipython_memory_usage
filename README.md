@@ -25,9 +25,13 @@ Simple:
 
 via https://pypi.org/project/ipython-memory-usage/
 
+`$ conda install -c conda-forge ipython_memory_usage`
+
+via https://anaconda.org/conda-forge/ipython_memory_usage
+
 OR
 
-Take a copy of the code or pull from https://github.com/ianozsvald/ipython_memory_usage and then:
+Take a copy of the code or fork from https://github.com/ianozsvald/ipython_memory_usage and then:
 
     $ python setup.py install
 
