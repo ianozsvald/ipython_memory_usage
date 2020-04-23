@@ -1,3 +1,11 @@
+"""Profile mem usage envelope of IPython commands and report interactively
+
+Use 
+In[] import ipython_memory_usage 
+In[] %ipython_memory_usage_start # invoke magic-based tracking and
+# %ipython_memory_usage_stop to disable
+"""
+
 from IPython.core.magic import (
     register_cell_magic, register_line_cell_magic
 )
