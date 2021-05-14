@@ -15,9 +15,7 @@ Francesc Alted has a fork with more memory delta details, see it here: https://g
 Setup
 =====
 
-Supported: Python 3.8 and IPython 7.9+
-
-Unsupported: Python 2.7 (the code used to work, it might now, I won't invest time here, you're welcome to fork it though)
+Supported: Python 3.8+ and IPython 7.9+
 
 Simple: 
 
@@ -52,6 +50,7 @@ using with magic:
 ```
 $ ipython
 In [1]: import ipython_memory_usage 
+# note that help(ipython_memory_usage) will give you some clues
 In [1] %ipython_memory_usage_start                                                                                 
 
 Out[1]: 'memory profile enabled'
@@ -251,6 +250,19 @@ python setup.py develop
 # now run ipython and follow the examples from further above in this README
 ```
 
+```
+# make a development environment
+$ mkdir ipython_memory_usage_dev
+$ cd ipython_memory_usage_dev/
+$ conda create -n ipython_memory_usage_dev python=3.9 ipython jupyter memory_profiler numpy pandas
+$ conda activate ipython_memory_usage_dev
+git clone git@github.com:ianozsvald/ipython_memory_usage.git
+
+# note "develop" and not the usual "install" here, to make the local folder editable!
+$ python setup.py develop 
+
+# now run ipython and follow the examples from further above in this README
+```
 
  Acknowledgements
  ================
