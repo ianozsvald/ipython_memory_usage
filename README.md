@@ -12,6 +12,8 @@ As a simple example - make 10,000,000 random numbers, report that it costs 76MB 
 
 Francesc Alted has a fork with more memory delta details, see it here: https://github.com/FrancescAlted/ipython_memwatcher
 
+For a demo using numpy and Pandas take a look at [examples/example_usage_np_pd.ipynb](https://github.com/ianozsvald/ipython_memory_usage/blob/master/src/ipython_memory_usage/examples/example_usage_np_pd.ipynb).
+
 Setup
 =====
 
