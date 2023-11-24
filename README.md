@@ -7,16 +7,30 @@ IPython tool to report memory usage deltas for every command you type. If you ar
 
 This tool helps you to figure out which commands use a lot of RAM and take a long time to run, this is very useful if you're working with large numpy matrices. In addition it reports the peak memory usage whilst a command is running which might be higher (due to temporary objects) than the final RAM usage. Built on @fabianp's `memory_profiler`.
 
-As a simple example - make 10,000,000 random numbers, report that it costs 76MB of RAM and took 0.3 seconds to execute:
+As a simple example - make 10,000,000,000 "ones", report that it costs 57GB of RAM and took 35 seconds to execute, with 1 CPU at 100% for at least some of the time and the overall CPU usage being 10% (as only 1 core was running):
 
-    # %load_ext ipython_memory_usage
-    # %imu_start
-    In [3]: arr=np.random.uniform(size=int(1e7))
-    'arr=np.random.uniform(size=int(1e7))' used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
+```
+$ ipython
+...
+In [1]: %load_ext ipython_memory_usage
+Enabling IPython Memory Usage, use %imu_start to begin, %imu_stop to end
+
+In [2]: %imu_start
+Out[2]: 'IPython Memory Usage started'
+In [2] used 1.0 MiB RAM in 8.02s (system mean cpu 0%, single max cpu 0%), peaked 0.0 MiB above final usage, current RAM usage now 55.1 MiB
+
+In [3]: import numpy as np
+In [3] used 14.6 MiB RAM in 0.25s (system mean cpu 15%, single max cpu 100%), peaked 0.0 MiB above final usage, current RAM usage now 69.8 MiB
+
+In [4]: np.ones(int(1e10));
+In [4] used -27.9 MiB RAM in 35.58s (system mean cpu 10%, single max cpu 100%), peaked 57458.3 MiB above final usage, current RAM usage now 54.1 MiB
+
+
+```
 
 Francesc Alted has a fork with more memory delta details, see it here: https://github.com/FrancescAlted/ipython_memwatcher
 
-For a demo using numpy and Pandas take a look at [examples/example_usage_np_pd.ipynb](https://github.com/ianozsvald/ipython_memory_usage/blob/master/src/ipython_memory_usage/examples/example_usage_np_pd.ipynb).
+For a demo using numpy and Pandas take a look at [examples/example_usage_np_pd.ipynb](https://github.com/ianozsvald/ipython_memory_usage/blob/master/src/ipython_memory_usage/examples/example_usage_np_pd.ipynb). __Note that this is not up to date__
 
 Setup
 =====
@@ -41,7 +55,7 @@ Take a copy of the code or fork from https://github.com/ianozsvald/ipython_memor
 
 If you pull it from github and you want to develop on it, it is easier to make a link in `site-packages` and develop it locally with:
 
-    $ python setup.py develop 
+    $ pip install -e .
 
 To uninstall:
 

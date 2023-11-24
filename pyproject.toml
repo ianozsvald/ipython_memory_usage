@@ -2,7 +2,7 @@
 
 name = "ipython_memory_usage"
 
-version = "1.8.1"
+version = "1.8.2"
 # https://sethmlarson.dev/pep-440 notes on writing a version number
 
 # description
@@ -22,7 +22,7 @@ authors = [
 #   maintainer="Ian Ozsvald",
 #   maintainer_email="ian@ianozsvald.com",
 
-dependencies = [ "IPython>=7.0", "memory_profiler"]
+dependencies = [ "IPython>=7.0", "memory_profiler", "psutil"]
 
 classifiers = [
     "Programming Language :: Python :: 3",

@@ -4,6 +4,7 @@
 import time
 import memory_profiler
 from IPython import get_ipython
+import psutil # ADDED
 
 #__version__ = 1.1  # set to desired value.
 # Disabled for now, I'll use pyproject.toml for this
@@ -21,6 +22,7 @@ previous_call_memory_usage = memory_profiler.memory_usage()[0]
 t1 = time.time()  # will be set to current time later
 keep_watching = True
 peak_memory_usage = -1
+cpu_utilisation_list = []
 watching_memory = True
 input_cells = get_ipython().user_ns['In']
 
@@ -68,16 +70,31 @@ def watch_memory(execution_result):
     time_delta_secs = time.time() - t1
     num_commands = len(input_cells) - 1
     cmd = "In [{}]".format(num_commands)
+
+    # summarise cpu utililisation
+    cpu_means = []
+    cpu_max = 0
+    cpu_mean = 0
+    for row in cpu_utilisation_list:
+        mean = sum(row) / len(row)
+        cpu_means.append(mean)
+        cpu_max = max(cpu_max, max(row))
+    if len(cpu_utilisation_list) > 0:
+        cpu_mean = sum(cpu_means) / len(cpu_means)
+    
+
     # convert the results into a pretty string
-    output_template = ("{cmd} used {memory_delta:0.4f} MiB RAM in "
-                       "{time_delta:0.2f}s, peaked {peaked_memory_usage:0.2f} "
-                       "MiB above current, total RAM usage "
-                       "{memory_usage:0.2f} MiB")
+    output_template = ("{cmd} used {memory_delta:0.1f} MiB RAM in "
+                       "{time_delta:0.2f}s (system mean cpu {cpu_mean:0.0f}%, single max cpu {cpu_max:0.0f}%), peaked {peaked_memory_usage:0.1f} "
+                       "MiB above final usage, current RAM usage now "
+                       "{memory_usage:0.1f} MiB")
     output = output_template.format(time_delta=time_delta_secs,
                                     cmd=cmd,
                                     memory_delta=memory_delta,
                                     peaked_memory_usage=peaked_memory_usage,
-                                    memory_usage=new_memory_usage)
+                                    memory_usage=new_memory_usage,
+                                    cpu_mean=cpu_mean,
+                                    cpu_max=cpu_max)
     if watching_memory:
         print(str(output))
     previous_call_memory_usage = new_memory_usage
@@ -87,16 +104,24 @@ def during_execution_memory_sampler():
     """Thread to sample memory usage"""
     import time
     import memory_profiler
-    global keep_watching, peak_memory_usage
+    global keep_watching, peak_memory_usage, cpu_utilisation_list
     peak_memory_usage = -1
+    cpu_utilisation_list = []
+    psutil.cpu_percent() # must call it once to clear the built-in history
     keep_watching = True
 
     n = 0
     WAIT_BETWEEN_SAMPLES_SECS = 0.001
     MAX_ITERATIONS = 60.0 / WAIT_BETWEEN_SAMPLES_SECS
     while True:
+        # get memory details
         mem_usage = memory_profiler.memory_usage()[0]
         peak_memory_usage = max(mem_usage, peak_memory_usage)
+
+        # get cpu usage details
+        this_cpu_utilisation = psutil.cpu_percent(percpu=True) # get cpu utilisation per cpu
+        cpu_utilisation_list.append(this_cpu_utilisation)
+
         time.sleep(WAIT_BETWEEN_SAMPLES_SECS)
         if not keep_watching or n > MAX_ITERATIONS:
             # exit if we've been told our command has finished or if it has run
@@ -119,3 +144,15 @@ def pre_run_cell(execution_result):
     ipython_memory_usage_thread = threading.Thread(target=during_execution_memory_sampler)
     ipython_memory_usage_thread.daemon = True
     ipython_memory_usage_thread.start()
+
+def expensive_fn():
+    """test fn to make the machine do some work"""
+    #import math
+    for _ in range(10):
+        nbr = [n for n in range(1_000_000)]
+        max_nbr = max(nbr)
+    return max_nbr
+
+if __name__ == "__main__":
+    # if we e.g. %run -i cell_profiler.py from IPython
+    start_watching_memory()
