@@ -5,9 +5,15 @@ import time
 import memory_profiler
 from IPython import get_ipython
 
-__version__ = 1.1  # set to desired value.
+#__version__ = 1.1  # set to desired value.
+# Disabled for now, I'll use pyproject.toml for this
+# we could use:
+# from importlib.metadata import version
+# version("ipython_memory_usage") -> "1.2"
+# I've moved the above to __init__.py
 
 # To run: %run -i ipython_memory_usage.py
+# but there will be no output
 
 # keep a global accounting for the last known memory usage
 # which is the reference point for the memory delta calculation
@@ -47,8 +53,9 @@ def stop_watching_memory():
         pass
 
 
-def watch_memory():
+def watch_memory(execution_result):
     """Prints the memory usage if watching the memory"""
+    #print(type(execution_result)) # <class 'IPython.core.interactiveshell.ExecutionResult'>
     # bring in the global memory usage value from the previous iteration
     global previous_call_memory_usage, peak_memory_usage, keep_watching, \
            watching_memory, input_cells
@@ -101,7 +108,7 @@ def during_execution_memory_sampler():
         n += 1
 
 
-def pre_run_cell():
+def pre_run_cell(execution_result):
     """Capture current time before we execute the current command"""
     import time
     global t1

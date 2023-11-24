@@ -1,0 +1,42 @@
+[project]
+
+name = "ipython_memory_usage"
+
+version = "1.8.1"
+# https://sethmlarson.dev/pep-440 notes on writing a version number
+
+# description
+description = "A Jupyter/IPYthon cell based memory and CPU profiler"
+readme="README.md"
+
+requires-python = ">=3.7"
+license = {file = "LICENSE.txt"}
+
+authors = [
+  { name="Ian Ozsvald", email="ian@ianozsvald.com" },
+]
+
+#  url="https://github.com/ianozsvald/ipython_memory_usage",
+#   author="Ian Ozsvald",
+#   author_email="ian@ianozsvald.com",
+#   maintainer="Ian Ozsvald",
+#   maintainer_email="ian@ianozsvald.com",
+
+dependencies = [ "IPython>=7.0", "memory_profiler"]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/ianozsvald/ipython_memory_usage"
+Issues = "https://github.com/ianozsvald/ipython_memory_usage"
+
+
+[build-system]
+requires = ["setuptools>=61.0", "build", "twine"]
+build-backend = "setuptools.build_meta"
+

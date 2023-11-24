@@ -1,12 +1,16 @@
 ipython_memory_usage
 ====================
 
+*CURRENT SITUATION - Ian is updating this, so this README is probably out of date, only this first section is actually correct as of 2023-11-24*
+
 IPython tool to report memory usage deltas for every command you type. If you are running out of RAM then use this tool to understand what's happening. It also records the time spent running each command.
 
 This tool helps you to figure out which commands use a lot of RAM and take a long time to run, this is very useful if you're working with large numpy matrices. In addition it reports the peak memory usage whilst a command is running which might be higher (due to temporary objects) than the final RAM usage. Built on @fabianp's `memory_profiler`.
 
 As a simple example - make 10,000,000 random numbers, report that it costs 76MB of RAM and took 0.3 seconds to execute:
 
+    # %load_ext ipython_memory_usage
+    # %imu_start
     In [3]: arr=np.random.uniform(size=int(1e7))
     'arr=np.random.uniform(size=int(1e7))' used 76.2578 MiB RAM in 0.33s, peaked 0.00 MiB above current, total RAM usage 107.37 MiB
 
@@ -235,6 +239,29 @@ Tested on
 Developer installation notes
 ============================
 
+Ian's 2023 update
+
+```
+conda create -n ipython_memory_usage python=3.12
+conda activate ipython_memory_usage
+pip install numpy
+pip install ipython
+
+pip install -e . # editable installation
+
+ipython
+import ipython_memory_usage
+%ipython_memory_usage_start
+
+python -m build # builds an installable
+```
+
+Questions:
+
+* Should I keep __version__ in ipython_memory_usage.py in addition to pyproject.toml?
+  * https://stackoverflow.com/questions/72167802/adding-version-attribute-to-python-module
+* Should twine be in the build dependencies in .toml?
+
 These notes are for the Man AHL 2019 Hackathon.
 
 ```
@@ -301,4 +328,12 @@ Problems
 Notes to Ian
 ============
 
-To push to PyPI I need to follow https://docs.python.org/3/distributing/index.html#distributing-index - specifically `python setup.py sdist` and `twine upload dist/*`. This uses https://pypi.org/project/twine/ .
+To push to PyPI I need to follow https://packaging.python.org/en/latest/tutorials/packaging-projects/:
+* pip install -U twine
+* update version in pyproject.toml
+* python -m build
+* check the dist/ folder only has the current build, 1 whl and 1 zip
+* python -m twine upload --repository testpypi dist/*
+  * username is __token__, password is the token in my passwords
+* python -m twine upload --repository pypi dist/* # when ready
+  
