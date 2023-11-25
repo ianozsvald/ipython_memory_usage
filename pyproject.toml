@@ -2,7 +2,7 @@
 
 name = "ipython_memory_usage"
 
-version = "1.8.2"
+version = "1.8.3"
 # https://sethmlarson.dev/pep-440 notes on writing a version number
 
 # description
