@@ -43,10 +43,6 @@ Simple:
 
 via https://pypi.org/project/ipython-memory-usage/
 
-`$ conda install -c conda-forge ipython_memory_usage`
-
-via https://anaconda.org/conda-forge/ipython_memory_usage
-
 OR
 
 Take a copy of the code or fork from https://github.com/ianozsvald/ipython_memory_usage and then:
@@ -66,122 +62,51 @@ Example usage
 
 We can measure on every line how large array operations allocate and deallocate memory:
 
-using with magic:
-```
-$ ipython
-In [1]: import ipython_memory_usage 
-# note that help(ipython_memory_usage) will give you some clues
-In [1] %ipython_memory_usage_start                                                                                 
-
-Out[1]: 'memory profile enabled'
-In [1] used 0.2383 MiB RAM in 0.11s, peaked 0.00 MiB above current, total RAM usage 47.64 MiB
-
-In [2]: import numpy as np 
-...: a = np.ones(int(1e7))                                                                                       
-In [2] used 85.9180 MiB RAM in 0.22s, peaked 0.00 MiB above current, total RAM usage 133.56 MiB
-
-In [3]: %ipython_memory_usage_stop                                                                                  
-Out[3]: 'memory profile disabled'
-
-In [4]: a = np.ones(int(1e7))  
-```
-
-using with function call:
-```
-$ ipython
-Python 3.4.3 |Anaconda 2.3.0 (64-bit)| (default, Jun  4 2015, 15:29:08) 
-IPython 3.2.0 -- An enhanced Interactive Python.
-
-In [1]: import ipython_memory_usage.ipython_memory_usage as imu
-In [2]: import numpy as np
-
-In [3]: imu.start_watching_memory()
-In [3] used 0.0469 MiB RAM in 7.32s, peaked 0.00 MiB above current, total RAM usage 56.88 MiB
-
-In [4]: a = np.ones(int(1e7))
-In [4] used 76.3750 MiB RAM in 0.14s, peaked 0.00 MiB above current, total RAM usage 133.25 MiB
-
-In [5]: del a
-In [5] used -76.2031 MiB RAM in 0.10s, total RAM usage 57.05 MiB
-
-In [6]: imu.stop_watching_memory()
-
-In [7]: b = np.ones(int(1e7))
-
-In [8]: b[0] * 5.0
-Out[8]: 5.0
-```
-
-
-
 For the beginner with numpy it can be easy to work on copies of matrices which use a large amount of RAM. The following example sets the scene and then shows an in-place low-RAM variant.
 
 First we make a random square array and modify it twice using copies taking 2.3GB RAM:
 ```    
-In [1]: imu.start_watching_memory()
-In [2]: a = np.random.random((int(1e4),int(1e4)))
-In [2] used 762.9531 MiB RAM in 2.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
+In [1]: %load_ext ipython_memory_usage
+Enabling IPython Memory Usage, use %imu_start to begin, %imu_stop to end
+In [2]: %imu_start
 
-In [3]: b = a*2
-In [3] used 762.9492 MiB RAM in 0.51s, peaked 0.00 MiB above current, total RAM usage 1575.25 MiB
+In [3]: a = np.random.random((int(1e4),int(1e4)))
+In [3] used 763.3 MiB RAM in 1.82s (system mean cpu 7%, single max cpu 100%), peaked 0.0 MiB above final usage, current RAM usage now 832.5 MiB
 
-In [4]: c = np.sqrt(b)
-In [4] used 762.9609 MiB RAM in 0.91s, peaked 0.00 MiB above current, total RAM usage 2338.21 MiB
+In [4]: b = a*2
+In [4] used 762.9 MiB RAM in 0.32s (system mean cpu 6%, single max cpu 100%), peaked 0.0 MiB above final usage, current RAM usage now 1595.5 MiB
+
+In [5]: c = np.sqrt(b)
+In [5] used 762.8 MiB RAM in 0.39s (system mean cpu 7%, single max cpu 100%), peaked 0.0 MiB above final usage, current RAM usage now 2358.3 MiB
 ```
 
 
 Now we do the same operations but in-place on `a`, using 813MB RAM in total:
 ```
-In [2]: a = np.random.random((int(1e4),int(1e4)))
-In [2] used 762.9531 MiB RAM in 2.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
-In [3]: a *= 2
-In [3] used 0.0078 MiB RAM in 0.21s, peaked 0.00 MiB above current, total RAM usage 812.30 MiB
-In [4]: a = np.sqrt(a, out=a)
-In [4] used 0.0859 MiB RAM in 0.71s, peaked 0.00 MiB above current, total RAM usage 813.46 MiB
+In [3]: a = np.random.random((int(1e4),int(1e4)))
+In [3] used 0.1 MiB RAM in 0.92s (system mean cpu 7%, single max cpu 100%), peaked 761.9 MiB above final usage, current RAM usage now 832.5 MiB
+
+In [4]: a *= 2
+In [4] used 0.1 MiB RAM in 0.18s (system mean cpu 6%, single max cpu 16%), peaked 0.0 MiB above final usage, current RAM usage now 832.6 MiB
+
+In [5]: a = np.sqrt(a, out=a)
+In [5] used 0.0 MiB RAM in 0.25s (system mean cpu 4%, single max cpu 50%), peaked 0.0 MiB above final usage, current RAM usage now 832.6 MiB
 ```
 
 Lots of `numpy` functions have in-place operations that can assign their result back into themselves (see the `out` argument): http://docs.scipy.org/doc/numpy/reference/ufuncs.html#available-ufuncs
 
-If we make a large 1.5GB array of random integers we can `sqrt` in-place using two approaches or assign the result to a new object `b` which doubles the RAM usage:
-```
-In [2]: a = np.random.randint(low=0, high=5, size=(10000, 20000))
-In [2] used 1525.8984 MiB RAM in 6.51s, peaked 0.00 MiB above current, total RAM usage 1575.26 MiB
 
-In [3]: a = np.sqrt(a)
-In [3] used 0.097 MiB RAM in 1.53s, peaked 1442.92 MiB above current, total RAM usage 1576.21 MiB
+Newer (2020+) versions of Numpy use temporary objects which provide memory optimisation, see https://docs.scipy.org/doc/numpy-1.13.0/release.html
 
-In [4]: a = np.sqrt(a, out=a)
-In [4] used 0.0234 MiB RAM in 0.51s, peaked 0.00 MiB above current, total RAM usage 1575.44 MiB
-
-In [5]: b = np.sqrt(a)
-In [5] used 1525.8828 MiB RAM in 1.27s, peaked 0.00 MiB above current, total RAM usage 3101.32 MiB
-```
-
-
-Newer versions of Numpy use temporary objects which provide memory optimisation, see https://docs.scipy.org/doc/numpy-1.13.0/release.html
-
-We see this behaviour in the output below. Prior to version 1.13 we would see a peak memory greater than 0.00MiB above current. Older versions of Numpy and Windows will precipitate differing memory usage due to temporary matrices. 
-```
-In [2]: a = np.ones(int(1e8)); b = np.ones(int(1e8)); c = np.ones(int(1e8))
-In [2] used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
-
-In [3]: d = a * b + c
-In [3] used 762.9453 MiB RAM in 0.71s, peaked 0.00 MiB above current, total RAM usage 3101.01 MiB
-```
-
-Knowing that a temporary is created, we can do an in-place operation instead for the same result but a lower overall RAM footprint:
-```
-In [2]: a = np.ones(int(1e8)); b = np.ones(int(1e8)); c = np.ones(int(1e8))
-In [2] used 2288.8750 MiB RAM in 1.02s, peaked 0.00 MiB above current, total RAM usage 2338.06 MiB
-
-In [3]: d = a * b
-In [3] used 762.9453 MiB RAM in 0.49s, peaked 0.00 MiB above current, total RAM usage 3101.00 MiB
-
-In [4]: d += c
-In [4] used 0.0000 MiB RAM in 0.25s, peaked 0.00 MiB above current, total RAM usage 3101.00 MiB
+`a` and `b` are multiplied into a temprorary, then the same temporary is re-used for the addition with `c` which is then assigned to `c` so only one circa 700MB array is created. In older versions of numpy several arrays could be created during the same operation.
 
 ```
-For more on this example see `Tip` at http://docs.scipy.org/doc/numpy/reference/ufuncs.html#available-ufuncs .
+In [3]: a = np.ones(int(1e8)); b = np.ones(int(1e8)); c = np.ones(int(1e8))
+In [3] used 2288.8 MiB RAM in 0.61s (system mean cpu 6%, single max cpu 100%), peaked 0.0 MiB above final usage, current RAM usage now 2358.4 MiB
+
+In [4]: d = a * b + c
+In [4] used 763.3 MiB RAM in 0.53s (system mean cpu 5%, single max cpu 100%), peaked 0.0 MiB above final usage, current RAM usage now 3121.7 MiB
+```
 
 Important RAM usage note
 ========================
@@ -191,6 +116,8 @@ It is much easier to debug RAM situations with a fresh IPython shell. The longer
 
 Experimental perf stat report to monitor caching
 ================================================
+
+__Totally out of date for 2023, this needs a refresh__
 
 I've added experimental support for the `perf stat` tool on Linux. To use it make sure that `perf stat` runs at the command line first. Experimental support of the `cache-misses` event is enabled in this variant script (to use this `cd src/ipython_memory_usage` first):
 ```
@@ -238,16 +165,13 @@ Requirements
 ============
 
  * `memory_profiler` https://github.com/fabianp/memory_profiler   (`pip install memory_profiler`)
+ * `psutil` for cpu tracking
  * `perf stat` (Linux only, installed outside of Python using e.g. Synaptic, apt-get etc)
 
 Tested on
 =========
 
- * IPython 7.9 with Python 3.7 on OS X 10.14.6 (2019-11)
- * IPython 7.9 with Python 3.8 on Windows 64bit (2019-11)
- * IPython 7.9 with Python 3.7 on Windows 64bit (2019-11)
- * IPython 3.6 with Python 3.6 on Linux 64bit and Macs (2018-04)
- * IPython 3.2 with Python 3.4 on Linux 64bit (2015-06)
+* IPython 8.17 with Python 3.12 on Linux 64bit (2023-11)
 
 
 Developer installation notes
@@ -270,11 +194,6 @@ import ipython_memory_usage
 python -m build # builds an installable
 ```
 
-Questions:
-
-* Should I keep __version__ in ipython_memory_usage.py in addition to pyproject.toml?
-  * https://stackoverflow.com/questions/72167802/adding-version-attribute-to-python-module
-* Should twine be in the build dependencies in .toml?
 
 These notes are for the Man AHL 2019 Hackathon.
 
@@ -332,13 +251,19 @@ TO FIX
 
  * merge perf variation into the main variation as some sort of plugin (so it doesn't interfere if per not installed or available)
  * possibly try to add a counter for the size of the garbage collector, to see how many temp objects are made (disable gc first) on each command?
+ * conda installation is really out of date `$ conda install -c conda-forge ipython_memory_usage` via https://anaconda.org/conda-forge/ipython_memory_usage
+* Should I keep __version__ in ipython_memory_usage.py in addition to pyproject.toml?
+  * https://stackoverflow.com/questions/72167802/adding-version-attribute-to-python-module
+* Should twine be in the build dependencies in .toml?
+* How to add developer dependencies like black?
+* For conda how do I specify the source package when it isn't uploaded yet?
+
 
 Problems
 ========
 
  * I can't figure out how to hook into live In prompt (at least - I can for static output, not for a dynamic output - see the code and the commented out blocks referring to `watch_memory_prompt`)
- * `python setup.py develop` will give you a sym-link from your environment back to this development folder, do this if you'd like to work on the project
-
+ 
 Notes to Ian
 ============
 

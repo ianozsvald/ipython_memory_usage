@@ -6,7 +6,7 @@ Conda build requires three files.
 * build.sh  - Script file with instructions for *nix builds.
 
 ## Build Package Locally
-Relevant documentation: https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html
+Relevant documentation: https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html and https://docs.conda.io/projects/conda-build/en/stable/resources/define-metadata.html
 
     # Clone repo
     git clone git@github.com:ianozsvald/ipython_memory_usage.git
